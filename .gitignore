@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Virtual environment
+env/
+.venv/
+
+# Data & models
+data/
+model/
+*.pcap
+*.csv
+
+# System-specific stuff
+*.swp
+*.swo
+.DS_Store
+
+# Pip / wheel cache
+*.egg-info/
+dist/
+build/

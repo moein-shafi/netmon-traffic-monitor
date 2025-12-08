@@ -1,0 +1,14 @@
+[Unit]
+Description=PCAP capture for moeinshafi.com every 5 minutes
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/tcpdump -i eth0 \
+  -w /var/pcaps/window-%%Y%%m%%d%%H%%M%%S.pcap \
+  -G 300 -W 12
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
