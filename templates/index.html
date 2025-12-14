@@ -104,6 +104,20 @@
       align-items: center;
     }
 
+    .credit-banner {
+      margin: 6px 2px 0;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.12), rgba(139, 92, 246, 0.14));
+      color: var(--text);
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow);
+    }
+
     .hero-card {
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(34, 211, 238, 0.12)), var(--card);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -358,6 +372,8 @@
       </div>
     </header>
 
+    <div class="credit-banner"><i class="fa-solid fa-star"></i> Crafted for <strong>moeinshafi.com</strong> — every pixel and insight credits Moein Shafi.</div>
+
     <main>
       <div id="error-banner" class="error-banner" style="display:none;"></div>
 
@@ -393,7 +409,20 @@
             </div>
           </div>
         </section>
+        <section class="card grid-col-8">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Traffic over time</div>
+                <div class="card-sub">Flows and attack flows per 5-minute window.</div>
+              </div>
+            </div>
+            <div class="chart-wrapper"><canvas id="chart-time-series"></canvas></div>
+          </div>
+        </section>
+      </div>
 
+      <div class="grid">
         <section class="card grid-col-8">
           <div class="card-inner">
             <div class="card-header">
@@ -423,6 +452,18 @@
               </div>
               <div class="latest-summary" id="latest-summary">No summary yet.</div>
             </div>
+          </div>
+        </section>
+        <section class="card grid-col-4">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Attack types</div>
+                <div class="card-sub">Distribution of predicted attack labels</div>
+              </div>
+            </div>
+            <div class="chart-wrapper small-chart"><canvas id="chart-attack-types"></canvas></div>
+            <div class="footer-note"><span id="attack-types-note">Includes all attack-labelled flows across the visible windows.</span></div>
           </div>
         </section>
       </div>
@@ -473,32 +514,6 @@
           </div>
         </div>
       </section>
-
-      <div class="grid">
-        <section class="card grid-col-8">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Traffic over time</div>
-                <div class="card-sub">Flows and attack flows per 5-minute window.</div>
-              </div>
-            </div>
-            <div class="chart-wrapper"><canvas id="chart-time-series"></canvas></div>
-          </div>
-        </section>
-        <section class="card grid-col-4">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Attack types</div>
-                <div class="card-sub">Distribution of predicted attack labels</div>
-              </div>
-            </div>
-            <div class="chart-wrapper small-chart"><canvas id="chart-attack-types"></canvas></div>
-            <div class="footer-note"><span id="attack-types-note">Includes all attack-labelled flows across the visible windows.</span></div>
-          </div>
-        </section>
-      </div>
 
       <section class="card grid-col-12">
         <div class="card-inner">
@@ -687,7 +702,7 @@
         .join(', ');
       latestLabels.textContent = labelText || 'None';
 
-      latestSummary.textContent = latest.summary || 'No summary provided.';
+      latestSummary.textContent = latest.llm_summary || 'No summary provided.';
     }
 
     function updateProSignals(windows) {
@@ -769,7 +784,7 @@
             <button class="insight-toggle" data-target="insight-summary-${idx}">Show insight</button>
             <span class="badge"><span class="badge-dot"></span>LLM narrative ready</span>
           </div>
-          <div class="insight-summary" id="insight-summary-${idx}" style="display:none;">${w.summary || 'No summary provided.'}</div>
+          <div class="insight-summary" id="insight-summary-${idx}" style="display:none;">${w.llm_summary || 'No summary provided.'}</div>
         `;
 
         container.appendChild(card);
