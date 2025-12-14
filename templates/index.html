@@ -44,6 +44,17 @@
       gap: 24px;
     }
 
+    .aurora {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.08), transparent 30%),
+        radial-gradient(circle at 80% 10%, rgba(34, 197, 94, 0.08), transparent 28%),
+        radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.06), transparent 32%);
+      filter: blur(40px);
+      opacity: 0.8;
+    }
+
     .shell {
       max-width: 1180px;
       margin: 0 auto;
@@ -164,6 +175,16 @@
       mix-blend-mode: screen;
     }
 
+    .card-hero {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(34, 197, 94, 0.06));
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .card-hero::before {
+      background: radial-gradient(circle at 80% 10%, rgba(34, 197, 94, 0.2), transparent 40%);
+      opacity: 1;
+    }
+
     .card-inner {
       position: relative;
       z-index: 1;
@@ -275,6 +296,122 @@
       max-height: 140px;
       overflow-y: auto;
       white-space: pre-wrap;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .insight-card {
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(10, 14, 26, 0.95));
+    }
+
+    .insight-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .insight-range {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .insight-meta {
+      color: var(--text-muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .insight-tags {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-end;
+    }
+
+    .insight-actions {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .insight-summary {
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 10px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      color: var(--text-main);
+    }
+
+    .insight-toggle {
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      color: #0b1020;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .insight-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(56, 189, 248, 0.3);
+    }
+
+    .pro-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .pro-tile {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .pro-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .pro-value {
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .pro-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.4), transparent);
+      margin: 6px 0 10px;
     }
 
     .pill-list {
@@ -460,12 +597,14 @@
       </div>
     </header>
 
+    <div class="aurora" aria-hidden="true"></div>
+
     <main>
       <div id="error-banner" class="error-banner" style="display:none;"></div>
 
       <div class="grid">
         <!-- SUMMARY CARD -->
-        <section class="card grid-col-4">
+        <section class="card card-hero grid-col-4">
           <div class="card-inner">
             <div class="card-header">
               <div>
@@ -543,6 +682,54 @@
           </div>
         </section>
       </div>
+
+      <section class="card card-hero">
+        <div class="card-inner">
+          <div class="card-header">
+            <div>
+              <div class="card-title">AI Analyst Console</div>
+              <div class="card-sub">LLM insights for each captured window — click to reveal the narrative.</div>
+            </div>
+            <span class="badge"><span class="badge-dot"></span>Every window is AI-summarized</span>
+          </div>
+          <div id="insights-container" class="insight-grid"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-inner">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Executive Signals</div>
+              <div class="card-sub">What seasoned SOC leads expect to see in an AI-native monitor.</div>
+            </div>
+            <span class="badge"><span class="badge-dot"></span>Pro-grade overlays</span>
+          </div>
+
+          <div class="pro-row">
+            <div class="pro-tile">
+              <div class="pro-title">Threat posture</div>
+              <div class="pro-value" id="pro-risk">–</div>
+              <div class="pro-desc">Composite outlook blending attack ratio, unknown flows, and latest label mix.</div>
+            </div>
+            <div class="pro-tile">
+              <div class="pro-title">AI confidence</div>
+              <div class="pro-value" id="pro-confidence">–</div>
+              <div class="pro-desc">Stability of ML verdicts across the last 3 windows.</div>
+            </div>
+            <div class="pro-tile">
+              <div class="pro-title">Threat velocity</div>
+              <div class="pro-value" id="pro-velocity">–</div>
+              <div class="pro-desc">Direction and pace of change in suspected attacks.</div>
+            </div>
+            <div class="pro-tile">
+              <div class="pro-title">LLM watchlist</div>
+              <div class="pro-value" id="pro-watchlist">–</div>
+              <div class="pro-desc">Labels most amplified in recent AI write-ups.</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div class="grid">
         <!-- TIME SERIES CHART -->
@@ -1036,6 +1223,134 @@ function renderLatestWindow(latest) {
       });
     }
 
+    function renderInsights(windows) {
+      const container = document.getElementById('insights-container');
+      container.innerHTML = '';
+
+      if (!windows || windows.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'insight-card';
+        empty.textContent = 'No windows yet – insights will appear as soon as data lands.';
+        container.appendChild(empty);
+        return;
+      }
+
+      const sorted = [...windows].sort(
+        (a, b) => new Date(b.metrics.start_time) - new Date(a.metrics.start_time)
+      );
+
+      sorted.slice(0, 6).forEach(w => {
+        const m = w.metrics;
+        const card = document.createElement('div');
+        card.className = 'insight-card';
+
+        const header = document.createElement('div');
+        header.className = 'insight-top';
+
+        const left = document.createElement('div');
+        const range = document.createElement('div');
+        range.className = 'insight-range';
+        range.textContent = `${formatUtc(m.start_time)} → ${formatUtc(m.end_time)}`;
+        const meta = document.createElement('div');
+        meta.className = 'insight-meta';
+        meta.textContent = `${m.total_flows.toLocaleString()} flows · ${m.attack_flows.toLocaleString()} attack · ${(m.unknown_flows || 0).toLocaleString()} unknown`;
+        left.appendChild(range);
+        left.appendChild(meta);
+
+        const tags = document.createElement('div');
+        tags.className = 'insight-tags';
+        const status = classifyStatus(m);
+        const riskChip = document.createElement('span');
+        riskChip.className = status.level === 'high' ? 'risk-high' : status.level === 'medium' ? 'risk-med' : 'risk-low';
+        riskChip.textContent = status.label;
+        const pulse = document.createElement('span');
+        pulse.className = 'badge';
+        pulse.innerHTML = `<span class="badge-dot"></span>Window ${w.id}`;
+        tags.appendChild(riskChip);
+        tags.appendChild(pulse);
+
+        header.appendChild(left);
+        header.appendChild(tags);
+
+        const actions = document.createElement('div');
+        actions.className = 'insight-actions';
+        const button = document.createElement('button');
+        button.className = 'insight-toggle';
+        button.type = 'button';
+        button.textContent = 'View LLM Analysis';
+
+        const summary = document.createElement('div');
+        summary.className = 'insight-summary';
+        summary.textContent = w.llm_summary || 'No LLM analysis yet for this window.';
+        summary.hidden = true;
+
+        button.addEventListener('click', () => {
+          const showing = !summary.hidden;
+          summary.hidden = showing;
+          button.textContent = showing ? 'View LLM Analysis' : 'Hide LLM Analysis';
+        });
+
+        actions.appendChild(button);
+
+        card.appendChild(header);
+        card.appendChild(actions);
+        card.appendChild(summary);
+        container.appendChild(card);
+      });
+    }
+
+    function updateProSignals(windows) {
+      const riskEl = document.getElementById('pro-risk');
+      const confidenceEl = document.getElementById('pro-confidence');
+      const velocityEl = document.getElementById('pro-velocity');
+      const watchlistEl = document.getElementById('pro-watchlist');
+
+      if (!windows || windows.length === 0) {
+        riskEl.textContent = confidenceEl.textContent = velocityEl.textContent = watchlistEl.textContent = '–';
+        return;
+      }
+
+      const sorted = [...windows].sort((a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time));
+      const latest = sorted[sorted.length - 1];
+      const recent = sorted.slice(-3);
+
+      const total = latest.metrics.total_flows || 0;
+      const attackRatio = total > 0 ? (latest.metrics.attack_flows / total) * 100 : 0;
+      const unknownRatio = total > 0 ? (latest.metrics.unknown_flows / total) * 100 : 0;
+      const composite = Math.min(100, Math.round(attackRatio * 0.7 + unknownRatio * 0.6));
+      riskEl.textContent = `${composite}% risk pressure`;
+
+      const varianceWindow = recent.map(w => (w.metrics.attack_flows / Math.max(1, w.metrics.total_flows)));
+      const mean = varianceWindow.reduce((a, b) => a + b, 0) / Math.max(varianceWindow.length, 1);
+      const stdev = Math.sqrt(
+        varianceWindow.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) /
+        Math.max(varianceWindow.length, 1)
+      );
+      const confidence = 100 - Math.round(stdev * 3000);
+      confidenceEl.textContent = `${Math.max(40, Math.min(confidence, 99))}% stable`;
+
+      const lastTwo = sorted.slice(-2);
+      if (lastTwo.length === 2) {
+        const prev = lastTwo[0].metrics.attack_flows;
+        const curr = lastTwo[1].metrics.attack_flows;
+        const delta = curr - prev;
+        const trend = delta === 0 ? 'steady' : delta > 0 ? 'rising' : 'cooling';
+        const pct = prev > 0 ? Math.round((delta / prev) * 100) : delta * 100;
+        velocityEl.textContent = `${trend} (${pct >= 0 ? '+' : ''}${pct}%)`;
+      } else {
+        velocityEl.textContent = 'n/a';
+      }
+
+      const labelCounts = {};
+      recent.forEach(w => {
+        Object.entries(w.metrics.attacks_per_label || {}).forEach(([label, count]) => {
+          labelCounts[label] = (labelCounts[label] || 0) + count;
+        });
+      });
+      const top = Object.entries(labelCounts).sort((a, b) => b[1] - a[1])[0];
+      watchlistEl.textContent = top ? `${top[0]} ↑` : 'No signals yet';
+    }
+
     async function loadDashboard() {
       try {
         clearError();
@@ -1044,6 +1359,8 @@ function renderLatestWindow(latest) {
 
         updateSummary(windows);
         updateLatest(windows);
+        renderInsights(windows);
+        updateProSignals(windows);
         updateTable(windows);
         updateTimeSeriesChart(windows);
         updateAttackTypesChart(windows);
