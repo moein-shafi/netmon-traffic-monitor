@@ -2,244 +2,271 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NetMon Dashboard – moeinshafi.com</title>
+  <title>NetMon Hyperview – moeinshafi.com</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Google Font -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
+  <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700|inter:400,500,600" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-RXf+QSDCUQs6Q0pFxO7HA1BVr4YVdLzWDePOA3cYj2Jk+57kqfzX4nG3i1M1QrQWUcRgl41Yk6YxY9w4C2md2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     :root {
-      --bg: #050816;
-      --bg-elevated: rgba(15, 23, 42, 0.95);
-      --bg-soft: rgba(15, 23, 42, 0.7);
-      --border-subtle: rgba(148, 163, 184, 0.25);
-      --accent: #22c55e;
-      --accent-soft: rgba(34, 197, 94, 0.18);
-      --accent-2: #38bdf8;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.8);
-      --radius-xl: 22px;
+      --bg: #05060f;
+      --bg-2: #070b1a;
+      --card: rgba(11, 15, 32, 0.9);
+      --card-2: rgba(13, 22, 46, 0.9);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e5e7eb;
+      --muted: #93a2c0;
+      --accent: #8b5cf6;
+      --accent-2: #22d3ee;
+      --accent-3: #22c55e;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      --radius: 20px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: radial-gradient(circle at top left, #1e293b 0, #020617 40%, #000 100%);
-      color: var(--text-main);
       min-height: 100vh;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+      background: radial-gradient(circle at 20% -10%, rgba(139, 92, 246, 0.15), transparent 35%),
+        radial-gradient(circle at 90% 10%, rgba(34, 211, 238, 0.15), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.2), transparent 30%),
+        linear-gradient(140deg, #05060f 0%, #0b0f24 45%, #05060f 100%);
+      color: var(--text);
+      padding: 28px;
+      overflow-x: hidden;
     }
 
-    .aurora {
+    .wireframe {
       position: fixed;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.08), transparent 30%),
-        radial-gradient(circle at 80% 10%, rgba(34, 197, 94, 0.08), transparent 28%),
-        radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.06), transparent 32%);
-      filter: blur(40px);
-      opacity: 0.8;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 90px 90px;
+      mask-image: radial-gradient(circle at 50% 30%, rgba(0,0,0,0.9), transparent 65%);
+      z-index: 0;
+    }
+
+    .nebula {
+      position: fixed;
+      inset: -10% -10% auto auto;
+      width: 460px;
+      height: 460px;
+      background: radial-gradient(circle, rgba(34, 211, 238, 0.25) 0%, transparent 60%);
+      filter: blur(60px);
+      opacity: 0.6;
+      z-index: 0;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+
+    .halo {
+      position: fixed;
+      left: -10%;
+      bottom: -18%;
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.32) 0%, transparent 55%);
+      filter: blur(72px);
+      opacity: 0.6;
+      z-index: 0;
+      animation: drift 22s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes drift {
+      to { transform: translate3d(16px, -24px, 0) scale(1.08); opacity: 0.9; }
     }
 
     .shell {
-      max-width: 1180px;
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
       margin: 0 auto;
       width: 100%;
-    }
-
-    header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .title-block {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 20px;
     }
 
-    .title-pill {
+    header.hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .credit-banner {
+      margin: 6px 2px 0;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.12), rgba(139, 92, 246, 0.14));
+      color: var(--text);
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      box-shadow: var(--shadow);
     }
 
-    .title-pill-dot {
-      width: 8px;
-      height: 8px;
+    .hero-card {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(34, 211, 238, 0.12)), var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+      border-radius: 22px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 90% 10%, rgba(34, 197, 94, 0.2), transparent 45%);
+      opacity: 0.8;
+      mix-blend-mode: screen;
+      z-index: -1;
+    }
+
+    .logo-gem {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(160deg, #22d3ee, #a855f7);
+      display: grid;
+      place-items: center;
+      color: #0b0f24;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      box-shadow: 0 12px 32px rgba(34, 211, 238, 0.35);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      padding: 6px 10px;
       border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 14px rgba(34, 197, 94, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 11px;
     }
 
     h1 {
-      font-size: 26px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
+      font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+      font-size: clamp(30px, 4vw, 42px);
+      margin: 10px 0 6px;
+      letter-spacing: -0.02em;
     }
 
-    h1 span {
-      color: var(--accent-2);
-    }
+    h1 span { color: #22d3ee; }
 
     .subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      max-width: 520px;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.6;
+      font-size: 14px;
     }
 
-    .meta {
+    .signal-row {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
     }
 
-    .meta strong {
-      color: var(--text-main);
-    }
-
-    .meta-pill {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.3);
+    .signal-chip {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     }
 
-    .meta-pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
+    .signal-chip i { color: #22c55e; }
 
-    main {
+    .status-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 211, 238, 0.06)), var(--card-2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 22px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 10px;
+      box-shadow: var(--shadow);
     }
+
+    .status-title { color: var(--muted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .status-value { font-size: 28px; font-weight: 700; }
+    .status-meta { color: var(--muted); font-size: 12px; }
+
+    main { display: flex; flex-direction: column; gap: 16px; }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 18px;
+      gap: 14px;
     }
 
     .card {
-      background: var(--bg-elevated);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-soft);
-      padding: 14px 16px;
       position: relative;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
       overflow: hidden;
+      box-shadow: var(--shadow);
+      isolation: isolate;
     }
 
     .card::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 55%);
-      opacity: 0.9;
-      pointer-events: none;
-      mix-blend-mode: screen;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 60%);
+      opacity: 0.6;
+      z-index: -1;
     }
 
-    .card-hero {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(34, 197, 94, 0.06));
-      border-color: rgba(56, 189, 248, 0.3);
-    }
+    .card-hero { background: linear-gradient(150deg, rgba(34, 211, 238, 0.08), rgba(139, 92, 246, 0.08)), var(--card-2); }
 
-    .card-hero::before {
-      background: radial-gradient(circle at 80% 10%, rgba(34, 197, 94, 0.2), transparent 40%);
-      opacity: 1;
-    }
-
-    .card-inner {
-      position: relative;
-      z-index: 1;
-    }
+    .card-inner { position: relative; z-index: 2; }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 8px;
     }
 
-    .card-title {
-      font-size: 13px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-    }
+    .card-title { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .card-sub { color: var(--muted); font-size: 12px; }
 
-    .card-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .stat-row {
-      display: flex;
-      gap: 12px;
-      margin-top: 6px;
-      flex-wrap: wrap;
-    }
-
-    .stat {
-      flex: 1 1 120px;
-      min-width: 0;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 20px;
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .stat-value-accent {
-      color: var(--accent);
-    }
+    .stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+    .stat { flex: 1 1 160px; min-width: 0; }
+    .stat-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .stat-value { font-size: 24px; font-weight: 700; }
+    .stat-value-accent { color: #22c55e; }
 
     .stat-chip {
       display: inline-flex;
@@ -247,438 +274,196 @@
       gap: 6px;
       padding: 4px 10px;
       border-radius: 999px;
-      background: var(--accent-soft);
-      color: var(--accent);
+      background: rgba(34, 211, 238, 0.14);
+      color: #22d3ee;
       font-size: 11px;
       margin-top: 4px;
+      border: 1px solid rgba(34, 211, 238, 0.4);
     }
 
-    .stat-chip span {
-      font-weight: 500;
-    }
+    .latest-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 11px; color: var(--muted); }
+    .latest-summary { margin-top: 8px; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; font-size: 12px; white-space: pre-wrap; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255,255,255,0.04); color: var(--muted); font-size: 11px; }
+    .badge-dot { width: 8px; height: 8px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 10px rgba(34, 197, 94, 0.7); }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+    .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 10px; }
+    .insight-card { padding: 12px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(11,15,32,0.85)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    .insight-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .insight-range { font-weight: 700; font-size: 14px; }
+    .insight-meta { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .insight-tags { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+    .pill { padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); font-size: 11px; }
+    .pill strong { color: var(--text); }
+    .insight-summary { margin-top: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; font-size: 12px; white-space: pre-wrap; }
+    .insight-toggle { background: linear-gradient(135deg, #22d3ee, #8b5cf6); color: #050816; border: none; border-radius: 999px; padding: 8px 14px; font-weight: 700; cursor: pointer; box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25); transition: transform 120ms ease, box-shadow 120ms ease; }
+    .insight-toggle:hover { transform: translateY(-1px); box-shadow: 0 16px 36px rgba(139, 92, 246, 0.35); }
 
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent-2);
-    }
+    .pro-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 8px; }
+    .pro-tile { padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(34,211,238,0.06)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+    .pro-title { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    .pro-value { font-size: 24px; font-weight: 800; margin-top: 6px; }
+    .pro-desc { color: var(--muted); font-size: 11px; margin-top: 4px; }
 
-    .latest-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 6px;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); margin: 6px 0 10px; }
 
-    .latest-summary {
-      margin-top: 8px;
-      padding: 10px 12px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      font-size: 12px;
-      color: var(--text-main);
-      max-height: 140px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-    }
+    .chart-wrapper { position: relative; height: 240px; margin-top: 6px; }
+    .small-chart { height: 220px; }
 
-    .insight-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 12px;
-      margin-top: 8px;
-    }
+    .windows-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+    .windows-table th, .windows-table td { padding: 8px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; white-space: nowrap; }
+    .windows-table th { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
+    .windows-table tr:hover td { background: rgba(255,255,255,0.03); }
 
-    .insight-card {
-      padding: 12px;
-      border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(10, 14, 26, 0.95));
-    }
+    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.08); }
+    .chip-green { background: rgba(34,197,94,0.14); color: #4ade80; border-color: rgba(34,197,94,0.5); }
+    .chip-red { background: rgba(239,68,68,0.14); color: #fca5a5; border-color: rgba(239,68,68,0.6); }
+    .chip-muted { background: rgba(255,255,255,0.04); color: var(--muted); }
 
-    .insight-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-    }
+    .footer-note { margin-top: 6px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .error-banner { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.6); color: #fecdd3; font-size: 12px; box-shadow: 0 12px 30px rgba(239,68,68,0.14); }
 
-    .insight-range {
-      font-weight: 600;
-      font-size: 13px;
-    }
+    .skeleton { background: linear-gradient(90deg, rgba(34,211,238,0.12), rgba(255,255,255,0.05), rgba(139,92,246,0.12)); background-size: 220% 100%; animation: shimmer 1.4s ease-in-out infinite; border-radius: 12px; height: 120px; margin-top: 6px; }
+    @keyframes shimmer { 0% { background-position: 200% 0%; } 100% { background-position: -200% 0%; } }
 
-    .insight-meta {
-      color: var(--text-muted);
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .insight-tags {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: flex-end;
-    }
-
-    .insight-actions {
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .insight-summary {
-      margin-top: 8px;
-      padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 10px;
-      font-size: 12px;
-      white-space: pre-wrap;
-      color: var(--text-main);
-    }
-
-    .insight-toggle {
-      background: linear-gradient(135deg, #38bdf8, #22c55e);
-      color: #0b1020;
-      border: none;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 10px 20px rgba(34, 197, 94, 0.25);
-      transition: transform 120ms ease, box-shadow 120ms ease;
-    }
-
-    .insight-toggle:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(56, 189, 248, 0.3);
-    }
-
-    .pro-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .pro-tile {
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      background: rgba(15, 23, 42, 0.85);
-    }
-
-    .pro-title {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--text-muted);
-    }
-
-    .pro-value {
-      font-size: 22px;
-      font-weight: 700;
-      margin-top: 6px;
-    }
-
-    .pro-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .divider {
-      width: 100%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.4), transparent);
-      margin: 6px 0 10px;
-    }
-
-    .pill-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-      font-size: 11px;
-    }
-
-    .pill {
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      color: var(--text-muted);
-    }
-
-    .pill strong {
-      color: var(--text-main);
-      font-weight: 500;
-    }
-
-    .chart-wrapper {
-      margin-top: 4px;
-      position: relative;
-      height: 220px;
-    }
-
-    .small-chart {
-      height: 200px;
-    }
-
-    .windows-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 6px;
-      font-size: 12px;
-    }
-
-    .windows-table th,
-    .windows-table td {
-      padding: 6px 6px;
-      border-bottom: 1px solid rgba(30, 41, 59, 0.85);
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    .windows-table th {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .windows-table tr:hover td {
-      background: rgba(15, 23, 42, 0.85);
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-    }
-
-    .chip-green {
-      background: rgba(22, 163, 74, 0.12);
-      color: #4ade80;
-      border-color: rgba(22, 163, 74, 0.6);
-    }
-
-    .chip-red {
-      background: rgba(220, 38, 38, 0.12);
-      color: #fca5a5;
-      border-color: rgba(220, 38, 38, 0.6);
-    }
-
-    .chip-muted {
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-muted);
-    }
-
-    .footer-note {
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--text-muted);
-      opacity: 0.7;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .error-banner {
-      margin-top: 10px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: rgba(248, 113, 113, 0.12);
-      border: 1px solid rgba(248, 113, 113, 0.7);
-      color: #fecaca;
-      font-size: 12px;
-    }
-
-    .skeleton {
-      background: linear-gradient(
-        90deg,
-        rgba(30, 64, 175, 0.12),
-        rgba(15, 23, 42, 0.9),
-        rgba(30, 64, 175, 0.12)
-      );
-      background-size: 200% 100%;
-      animation: shimmer 1.4s ease-in-out infinite;
-      border-radius: 12px;
-      height: 120px;
-      margin-top: 6px;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: 200% 0%;
-      }
-      100% {
-        background-position: -200% 0%;
-      }
-    }
-
-    @media (max-width: 900px) {
-      body {
-        padding: 16px;
-      }
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .meta {
-        align-items: flex-start;
-      }
-      .grid {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-      }
+    @media (max-width: 1024px) {
+      body { padding: 18px; }
+      header.hero { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     }
 
     @media (min-width: 900px) {
-      .grid-col-4 {
-        grid-column: span 4 / span 4;
-      }
-      .grid-col-8 {
-        grid-column: span 8 / span 8;
-      }
-      .grid-col-6 {
-        grid-column: span 6 / span 6;
-      }
-      .grid-col-12 {
-        grid-column: span 12 / span 12;
-      }
+      .grid-col-4 { grid-column: span 4 / span 4; }
+      .grid-col-6 { grid-column: span 6 / span 6; }
+      .grid-col-8 { grid-column: span 8 / span 8; }
+      .grid-col-12 { grid-column: span 12 / span 12; }
     }
   </style>
 </head>
 <body>
+  <div class="wireframe" aria-hidden="true"></div>
+  <div class="nebula" aria-hidden="true"></div>
+  <div class="halo" aria-hidden="true"></div>
+
   <div class="shell">
-    <header>
-      <div class="title-block">
-        <div class="title-pill">
-          <span class="title-pill-dot"></span>
-          <span>Live Traffic Monitor (Last Hour)</span>
+    <header class="hero">
+      <div class="hero-card">
+        <div class="eyebrow"><i class="fa-solid fa-bolt"></i> AI Native Traffic Intelligence</div>
+        <div style="display:flex; align-items:center; gap:14px; margin-top:10px;">
+          <div class="logo-gem">NM</div>
+          <div>
+            <h1>Net<span>Mon</span> Hyperview</h1>
+            <p class="subtitle">A cinematic control room for your VPS interface. Every 5 minutes we aggregate flows, classify attacks, and ask a local LLM to narrate what matters. The last 12 windows (≈1 hour) stay live.</p>
+          </div>
         </div>
-        <h1>Net<span>Mon</span> – moeinshafi.com</h1>
-        <p class="subtitle">
-          5-minute windows captured from the VPS interface, aggregated into flows, classified by your ML model,
-          and summarized by a local LLM. This page polls the API and visualizes the last 12 windows (≈1 hour).
-        </p>
+        <div class="signal-row">
+          <span class="signal-chip"><i class="fa-solid fa-satellite"></i> Streaming telemetry</span>
+          <span class="signal-chip"><i class="fa-solid fa-wand-magic-sparkles"></i> ML + LLM fusion</span>
+          <span class="signal-chip"><i class="fa-solid fa-shield-halved"></i> SOC-grade views</span>
+        </div>
       </div>
-      <div class="meta">
-        <div class="meta-pill">
-          <span class="meta-pill-dot"></span>
-          <span id="refresh-status">Last refresh: –</span>
+      <div class="status-card">
+        <div class="status-title">Live capture</div>
+        <div class="status-value" id="refresh-status">Last refresh: –</div>
+        <div class="status-meta">Auto-refresh every 60 seconds · VPS tap</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="badge"><span class="badge-dot"></span>LLM summaries active</span>
+          <span class="badge"><i class="fa-regular fa-compass"></i> Adaptive risk radar</span>
         </div>
-        <div>Auto-refresh every <strong>60 seconds</strong></div>
       </div>
     </header>
 
-    <div class="aurora" aria-hidden="true"></div>
+    <div class="credit-banner"><i class="fa-solid fa-star"></i> Crafted for <strong>moeinshafi.com</strong> — every pixel and insight credits Moein Shafi.</div>
 
     <main>
       <div id="error-banner" class="error-banner" style="display:none;"></div>
 
       <div class="grid">
-        <!-- SUMMARY CARD -->
         <section class="card card-hero grid-col-4">
           <div class="card-inner">
             <div class="card-header">
               <div>
-                <div class="card-title">Overall</div>
-                <div class="card-sub">Aggregated metrics across all visible windows</div>
+                <div class="card-title">Global pulse</div>
+                <div class="card-sub">Aggregated metrics across visible windows</div>
               </div>
             </div>
-
             <div id="summary-skeleton" class="skeleton"></div>
-
             <div id="summary-content" style="display:none;">
               <div class="stat-row">
                 <div class="stat">
                   <div class="stat-label">Total flows</div>
                   <div class="stat-value" id="stat-total-flows">–</div>
+                  <div class="stat-chip">Packets <span id="stat-total-packets">–</span></div>
                 </div>
                 <div class="stat">
-                  <div class="stat-label">Total packets</div>
-                  <div class="stat-value" id="stat-total-packets">–</div>
-                </div>
-              </div>
-              <div class="stat-row">
-                <div class="stat">
-                  <div class="stat-label">Benign flows</div>
+                  <div class="stat-label">Benign</div>
                   <div class="stat-value" id="stat-benign-flows">–</div>
                 </div>
                 <div class="stat">
-                  <div class="stat-label">Attack flows</div>
+                  <div class="stat-label">Attack</div>
                   <div class="stat-value stat-value-accent" id="stat-attack-flows">–</div>
-                  <div class="stat-chip">
-                    <span id="stat-attack-percent">–%</span>
-                    <span>of flows flagged as attack</span>
-                  </div>
+                  <div class="stat-chip">Attack share <span id="stat-attack-percent">–</span></div>
                 </div>
               </div>
-              <div class="footer-note">
-                <span>All values are from the last 12 windows (up to 60 minutes).</span>
-                <span id="window-count-note"></span>
-              </div>
+              <div class="divider"></div>
+              <div class="footer-note" id="window-count-note">Waiting for windows…</div>
             </div>
           </div>
         </section>
-
-        <!-- LATEST WINDOW CARD -->
         <section class="card grid-col-8">
           <div class="card-inner">
             <div class="card-header">
               <div>
-                <div class="card-title">Latest 5-minute window</div>
-                <div class="card-sub">Most recent capture and classification result</div>
+                <div class="card-title">Traffic over time</div>
+                <div class="card-sub">Flows and attack flows per 5-minute window.</div>
               </div>
-              <span class="badge">
-                <span class="badge-dot"></span>
-                <span id="latest-risk-label">Risk: –</span>
-              </span>
             </div>
+            <div class="chart-wrapper"><canvas id="chart-time-series"></canvas></div>
+          </div>
+        </section>
+      </div>
 
+      <div class="grid">
+        <section class="card grid-col-8">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Latest capture</div>
+                <div class="card-sub">The freshest 5-minute window, enriched and narrated.</div>
+              </div>
+            </div>
             <div id="latest-skeleton" class="skeleton"></div>
-
             <div id="latest-content" style="display:none;">
               <div class="latest-meta">
-                <span id="latest-range">Window: –</span>
-                <span id="latest-flows">Flows: –</span>
-                <span id="latest-packets">Packets: –</span>
-                <span id="latest-benign">Benign: –</span>
-                <span id="latest-attacks">Attacks: –</span>
+                <span class="badge"><i class="fa-regular fa-clock"></i> <span id="latest-range">–</span></span>
+                <span class="badge"><i class="fa-solid fa-sitemap"></i> Flows: <strong id="latest-flows">–</strong></span>
+                <span class="badge"><i class="fa-solid fa-box-open"></i> Packets: <strong id="latest-packets">–</strong></span>
+                <span class="badge"><i class="fa-solid fa-shield-virus"></i> Attacks: <strong id="latest-attacks">–</strong></span>
+                <span class="badge" id="latest-risk-label"><span class="badge-dot"></span></span>
               </div>
-
-              <div class="pill-list" id="latest-labels"></div>
-
-              <div class="latest-summary" id="latest-summary">
-                No summary yet.
+              <div class="stat-row">
+                <div class="stat">
+                  <div class="stat-label">Benign</div>
+                  <div class="stat-value" id="latest-benign">–</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Top labels</div>
+                  <div class="stat-value" id="latest-labels">–</div>
+                </div>
+              </div>
+              <div class="latest-summary" id="latest-summary">No summary yet.</div>
+            </div>
+          </div>
+        </section>
+        <section class="card grid-col-4">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Attack types</div>
+                <div class="card-sub">Distribution of predicted attack labels</div>
               </div>
             </div>
+            <div class="chart-wrapper small-chart"><canvas id="chart-attack-types"></canvas></div>
+            <div class="footer-note"><span id="attack-types-note">Includes all attack-labelled flows across the visible windows.</span></div>
           </div>
         </section>
       </div>
@@ -687,10 +472,10 @@
         <div class="card-inner">
           <div class="card-header">
             <div>
-              <div class="card-title">AI Analyst Console</div>
+              <div class="card-title">AI Analyst console</div>
               <div class="card-sub">LLM insights for each captured window — click to reveal the narrative.</div>
             </div>
-            <span class="badge"><span class="badge-dot"></span>Every window is AI-summarized</span>
+            <span class="badge"><span class="badge-dot"></span>Every window summarized</span>
           </div>
           <div id="insights-container" class="insight-grid"></div>
         </div>
@@ -700,12 +485,11 @@
         <div class="card-inner">
           <div class="card-header">
             <div>
-              <div class="card-title">Executive Signals</div>
-              <div class="card-sub">What seasoned SOC leads expect to see in an AI-native monitor.</div>
+              <div class="card-title">Executive signals</div>
+              <div class="card-sub">Pro-grade overlays fused from model confidence, velocity, and label mix.</div>
             </div>
-            <span class="badge"><span class="badge-dot"></span>Pro-grade overlays</span>
+            <span class="badge"><span class="badge-dot"></span>Elite overlays</span>
           </div>
-
           <div class="pro-row">
             <div class="pro-tile">
               <div class="pro-title">Threat posture</div>
@@ -731,42 +515,6 @@
         </div>
       </section>
 
-      <div class="grid">
-        <!-- TIME SERIES CHART -->
-        <section class="card grid-col-8">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Traffic over time</div>
-                <div class="card-sub">Flows and attack flows per 5-minute window</div>
-              </div>
-            </div>
-            <div class="chart-wrapper">
-              <canvas id="chart-time-series"></canvas>
-            </div>
-          </div>
-        </section>
-
-        <!-- ATTACK TYPE DISTRIBUTION -->
-        <section class="card grid-col-4">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Attack types</div>
-                <div class="card-sub">Distribution of predicted attack labels</div>
-              </div>
-            </div>
-            <div class="chart-wrapper small-chart">
-              <canvas id="chart-attack-types"></canvas>
-            </div>
-            <div class="footer-note">
-              <span id="attack-types-note">Includes all attack-labelled flows across the visible windows.</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- WINDOWS TABLE -->
       <section class="card grid-col-12">
         <div class="card-inner">
           <div class="card-header">
@@ -792,9 +540,7 @@
               </thead>
               <tbody id="windows-table-body">
                 <tr>
-                  <td colspan="9" style="text-align:center; color:var(--text-muted); padding:10px;">
-                    Waiting for data… capture needs at least one 5-minute window.
-                  </td>
+                  <td colspan="9" style="text-align:center; color:var(--muted); padding:10px;">Waiting for data… capture needs at least one 5-minute window.</td>
                 </tr>
               </tbody>
             </table>
@@ -908,174 +654,186 @@
       windowCountNote.textContent = `${windows.length} window(s) currently displayed.`;
     }
 
+    function classifyStatus(metrics) {
+      const total = metrics.total_flows || 0;
+      const attack = metrics.attack_flows || 0;
+      const unknown = metrics.unknown_flows || 0;
 
-function classifyStatus(metrics) {
-  const total = metrics.total_flows || 0;
-  const attack = metrics.attack_flows || 0;
-  const unknown = metrics.unknown_flows || 0;
+      if (total === 0) {
+        return { label: "No data", level: "neutral" };
+      }
 
-  if (total === 0) {
-    return { label: "No data", level: "neutral" };
-  }
+      const attackRatio = attack / total;
+      const unknownRatio = unknown / total;
 
-  const attackRatio = attack / total;
-  const unknownRatio = unknown / total;
+      if (attackRatio >= 0.5 || unknownRatio >= 0.35) return { label: "Critical", level: "high" };
+      if (attackRatio >= 0.15 || unknownRatio >= 0.2) return { label: "Elevated", level: "medium" };
+      return { label: "Normal", level: "low" };
+    }
 
-  if (attackRatio > 0.3) {
-    return { label: "High suspected attack activity", level: "high" };
-  }
-  if (attackRatio > 0.05 || unknownRatio > 0.3) {
-    return { label: "Requires attention", level: "medium" };
-  }
-  return { label: "Mostly benign", level: "low" };
-}
-
-function renderLatestWindow(latest) {
-  const m = latest.metrics;
-  const status = classifyStatus(m);
-  const unknownFlows = m.unknown_flows || 0;
-
-  const attacksPerLabel = m.attacks_per_label || {};
-  const labelsHtml = Object.entries(attacksPerLabel)
-    .map(([label, count]) => `<div class="label-row"><span>${label}</span><span>${count}</span></div>`)
-    .join("");
-
-  document.getElementById("latest-window").innerHTML = `
-    <div class="card">
-      <div class="card-header">
-        <h2>Current 5-minute window</h2>
-        <span class="status status-${status.level}">${status.label}</span>
-      </div>
-      <div class="card-body">
-        <div class="stat-grid">
-          <div class="stat">
-            <span class="stat-label">Total flows</span>
-            <span class="stat-value">${m.total_flows}</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Benign flows</span>
-            <span class="stat-value">${m.benign_flows}</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Attack flows</span>
-            <span class="stat-value">${m.attack_flows}</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Unknown / Needs investigation</span>
-            <span class="stat-value">${unknownFlows}</span>
-          </div>
-        </div>
-
-        <h3>Attack label breakdown</h3>
-        <div class="labels-grid">
-          ${labelsHtml || "<div class=\"muted\">No attack labels in this window.</div>"}
-        </div>
-
-        <h3>Summary</h3>
-        <pre class="summary-text">${latest.llm_summary}</pre>
-      </div>
-    </div>
-  `;
-}
-
-
-    function updateLatest(windows) {
+    function updateLatestWindow(windows) {
       latestSkeleton.style.display = 'none';
       latestContent.style.display = 'block';
 
       if (!windows || windows.length === 0) {
-        latestRange.textContent = 'Window: –';
-        latestFlows.textContent = 'Flows: 0';
-        latestPackets.textContent = 'Packets: 0';
-        latestBenign.textContent = 'Benign: 0';
-        latestAttacks.textContent = 'Attacks: 0';
-        latestLabels.innerHTML = '';
-        latestSummary.textContent = 'No summary yet.';
-        latestRiskLabel.textContent = 'Risk: –';
-        latestRiskLabel.className = '';
+        latestSummary.textContent = 'No windows yet.';
+        return;
+      }
+
+      const latest = windows.reduce((a, b) => new Date(a.metrics.end_time) > new Date(b.metrics.end_time) ? a : b);
+      const m = latest.metrics;
+
+      latestRange.textContent = `${formatUtc(m.start_time)} → ${formatUtc(m.end_time)}`;
+      latestFlows.textContent = (m.total_flows || 0).toLocaleString();
+      latestPackets.textContent = (m.total_packets || 0).toLocaleString();
+      latestBenign.textContent = (m.benign_flows || 0).toLocaleString();
+      latestAttacks.textContent = (m.attack_flows || 0).toLocaleString();
+
+      const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
+      const risk = computeRiskLabel(attackPercent);
+      latestRiskLabel.className = 'badge';
+      latestRiskLabel.innerHTML = `<span class="badge-dot"></span>${risk.label}`;
+
+      const labels = m.attacks_per_label || {};
+      const labelText = Object.entries(labels)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([label, count]) => `${label} (${count})`)
+        .join(', ');
+      latestLabels.textContent = labelText || 'None';
+
+      latestSummary.textContent = latest.llm_summary || 'No summary provided.';
+    }
+
+    function updateProSignals(windows) {
+      if (!windows || windows.length === 0) {
+        document.getElementById('pro-risk').textContent = '–';
+        document.getElementById('pro-confidence').textContent = '–';
+        document.getElementById('pro-velocity').textContent = '–';
+        document.getElementById('pro-watchlist').textContent = '–';
+        return;
+      }
+
+      const lastThree = [...windows]
+        .sort((a, b) => new Date(b.metrics.end_time) - new Date(a.metrics.end_time))
+        .slice(0, 3);
+
+      const attackRatios = lastThree.map(w => {
+        const m = w.metrics;
+        return m.total_flows ? (m.attack_flows / m.total_flows) : 0;
+      });
+
+      const avgAttackRatio = attackRatios.reduce((a, b) => a + b, 0) / attackRatios.length;
+      const trend = attackRatios[0] - attackRatios[attackRatios.length - 1];
+
+      const proRisk = avgAttackRatio >= 0.4 ? 'Critical' : avgAttackRatio >= 0.18 ? 'Elevated' : 'Stable';
+      document.getElementById('pro-risk').textContent = proRisk;
+      document.getElementById('pro-velocity').textContent = trend >= 0.05 ? 'Accelerating' : trend <= -0.05 ? 'Cooling' : 'Steady';
+
+      const labelCounts = {};
+      lastThree.forEach(w => {
+        const labels = w.metrics.attacks_per_label || {};
+        Object.entries(labels).forEach(([label, count]) => {
+          labelCounts[label] = (labelCounts[label] || 0) + count;
+        });
+      });
+
+      const topLabel = Object.entries(labelCounts).sort((a, b) => b[1] - a[1])[0];
+      document.getElementById('pro-watchlist').textContent = topLabel ? topLabel[0] : 'None';
+
+      const variance = attackRatios.reduce((acc, r) => acc + Math.pow(r - avgAttackRatio, 2), 0) / attackRatios.length;
+      document.getElementById('pro-confidence').textContent = variance < 0.01 ? 'High' : variance < 0.04 ? 'Medium' : 'Low';
+    }
+
+    function updateInsights(windows) {
+      const container = document.getElementById('insights-container');
+      container.innerHTML = '';
+
+      if (!windows || windows.length === 0) {
+        container.innerHTML = '<div style="color:var(--muted);">No windows yet.</div>';
         return;
       }
 
       const sorted = [...windows].sort(
-        (a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
+        (a, b) => new Date(b.metrics.end_time) - new Date(a.metrics.end_time)
       );
-      const latest = sorted[sorted.length - 1];
-      const m = latest.metrics;
 
-      const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
-      const risk = computeRiskLabel(attackPercent);
+      sorted.forEach((w, idx) => {
+        const card = document.createElement('div');
+        card.className = 'insight-card';
 
-      latestRange.textContent = `Window: ${formatUtc(m.start_time)} → ${formatUtc(m.end_time)}`;
-      latestFlows.textContent = `Flows: ${m.total_flows.toLocaleString()}`;
-      latestPackets.textContent = `Packets: ${m.total_packets.toLocaleString()}`;
-      latestBenign.textContent = `Benign: ${m.benign_flows.toLocaleString()}`;
-      latestAttacks.textContent = `Attacks: ${m.attack_flows.toLocaleString()}`;
-
-      latestLabels.innerHTML = '';
-      const labels = m.attacks_per_label || {};
-      const entries = Object.entries(labels);
-      if (entries.length === 0) {
-        const pill = document.createElement('div');
-        pill.className = 'pill';
-        pill.textContent = 'No attack labels recorded for this window.';
-        latestLabels.appendChild(pill);
-      } else {
-        entries
+        const status = classifyStatus(w.metrics);
+        const labelEntries = Object.entries(w.metrics.attacks_per_label || {})
           .sort((a, b) => b[1] - a[1])
-          .forEach(([label, count]) => {
-            const pill = document.createElement('div');
-            pill.className = 'pill';
-            pill.innerHTML = `<strong>${label}</strong> · ${count.toLocaleString()} flows`;
-            latestLabels.appendChild(pill);
-          });
-      }
+          .slice(0, 2)
+          .map(([label, count]) => `${label} (${count})`)
+          .join(', ');
 
-      latestSummary.textContent = latest.llm_summary || 'No summary available.';
-      latestRiskLabel.textContent = risk.label;
-      latestRiskLabel.className = risk.className;
+        card.innerHTML = `
+          <div class="insight-top">
+            <div>
+              <div class="insight-range">${formatUtc(w.metrics.start_time)} → ${formatUtc(w.metrics.end_time)}</div>
+              <div class="insight-meta">Flows ${w.metrics.total_flows || 0} · Packets ${w.metrics.total_packets || 0}</div>
+            </div>
+            <div class="insight-tags">
+              <span class="pill"><strong>${status.label}</strong> state</span>
+              <span class="pill">Top labels: <strong>${labelEntries || 'None'}</strong></span>
+            </div>
+          </div>
+          <div class="insight-actions">
+            <button class="insight-toggle" data-target="insight-summary-${idx}">Show insight</button>
+            <span class="badge"><span class="badge-dot"></span>LLM narrative ready</span>
+          </div>
+          <div class="insight-summary" id="insight-summary-${idx}" style="display:none;">${w.llm_summary || 'No summary provided.'}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll('.insight-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const target = document.getElementById(targetId);
+          const isHidden = target.style.display === 'none';
+          target.style.display = isHidden ? 'block' : 'none';
+          btn.textContent = isHidden ? 'Hide insight' : 'Show insight';
+        });
+      });
     }
 
     function updateTable(windows) {
       windowsTableBody.innerHTML = '';
 
       if (!windows || windows.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 9;
-        td.style.textAlign = 'center';
-        td.style.color = 'var(--text-muted)';
-        td.style.padding = '10px';
-        td.textContent = 'No windows yet – wait at least 5 minutes for the first capture.';
-        tr.appendChild(td);
-        windowsTableBody.appendChild(tr);
+        windowsTableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted); padding:10px;">No windows yet.</td></tr>';
         return;
       }
 
       const sorted = [...windows].sort(
-        (a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
+        (a, b) => new Date(b.metrics.start_time) - new Date(a.metrics.start_time)
       );
 
       sorted.forEach((w, idx) => {
+        const tr = document.createElement('tr');
         const m = w.metrics;
+
         const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
         const risk = computeRiskLabel(attackPercent);
-
-        const tr = document.createElement('tr');
 
         const cols = [
           idx + 1,
           formatUtc(m.start_time),
           formatUtc(m.end_time),
-          m.total_flows.toLocaleString(),
-          m.total_packets.toLocaleString(),
-          m.benign_flows.toLocaleString(),
-          m.attack_flows.toLocaleString(),
+          (m.total_flows || 0).toLocaleString(),
+          (m.total_packets || 0).toLocaleString(),
+          (m.benign_flows || 0).toLocaleString(),
+          (m.attack_flows || 0).toLocaleString(),
           attackPercent.toFixed(1) + '%'
         ];
 
-        cols.forEach(value => {
+        cols.forEach(text => {
           const td = document.createElement('td');
-          td.textContent = value;
+          td.textContent = text;
           tr.appendChild(td);
         });
 
@@ -1120,49 +878,35 @@ function renderLatestWindow(latest) {
             {
               label: 'Total flows',
               data: flows,
-              tension: 0.35
+              tension: 0.35,
+              borderColor: '#22d3ee',
+              backgroundColor: 'rgba(34, 211, 238, 0.2)',
+              fill: true,
+              pointRadius: 3,
+              pointHoverRadius: 5
             },
             {
               label: 'Attack flows',
               data: attacks,
-              tension: 0.35
+              tension: 0.35,
+              borderColor: '#f472b6',
+              backgroundColor: 'rgba(244, 114, 182, 0.2)',
+              fill: true,
+              pointRadius: 3,
+              pointHoverRadius: 5
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
-          },
+          interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: {
-              labels: {
-                color: '#e5e7eb',
-                font: { size: 11 }
-              }
-            }
+            legend: { labels: { color: '#e5e7eb', font: { size: 11 } } }
           },
           scales: {
-            x: {
-              ticks: {
-                color: '#9ca3af',
-                font: { size: 11 }
-              },
-              grid: {
-                color: 'rgba(51, 65, 85, 0.6)'
-              }
-            },
-            y: {
-              ticks: {
-                color: '#9ca3af',
-                font: { size: 11 }
-              },
-              grid: {
-                color: 'rgba(30, 41, 59, 0.8)'
-              }
-            }
+            x: { ticks: { color: '#93a2c0', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#93a2c0', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
           }
         }
       });
@@ -1203,7 +947,10 @@ function renderLatestWindow(latest) {
           labels,
           datasets: [
             {
-              data: values
+              label: 'Attack count',
+              data: values,
+              backgroundColor: labels.map((_, i) => `hsl(${(i * 55) % 360}, 85%, 55%)`),
+              borderWidth: 0
             }
           ]
         },
@@ -1211,172 +958,37 @@ function renderLatestWindow(latest) {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#e5e7eb',
-                font: { size: 11 }
-              }
-            }
+            legend: { position: 'bottom', labels: { color: '#e5e7eb', font: { size: 11 } } }
           }
         }
       });
+
+      const totalAttacks = values.reduce((a, b) => a + b, 0);
+      document.getElementById('attack-types-note').textContent = `${totalAttacks.toLocaleString()} attacks across ${labels.length} labels.`;
     }
 
-    function renderInsights(windows) {
-      const container = document.getElementById('insights-container');
-      container.innerHTML = '';
-
-      if (!windows || windows.length === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'insight-card';
-        empty.textContent = 'No windows yet – insights will appear as soon as data lands.';
-        container.appendChild(empty);
-        return;
-      }
-
-      const sorted = [...windows].sort(
-        (a, b) => new Date(b.metrics.start_time) - new Date(a.metrics.start_time)
-      );
-
-      sorted.slice(0, 6).forEach(w => {
-        const m = w.metrics;
-        const card = document.createElement('div');
-        card.className = 'insight-card';
-
-        const header = document.createElement('div');
-        header.className = 'insight-top';
-
-        const left = document.createElement('div');
-        const range = document.createElement('div');
-        range.className = 'insight-range';
-        range.textContent = `${formatUtc(m.start_time)} → ${formatUtc(m.end_time)}`;
-        const meta = document.createElement('div');
-        meta.className = 'insight-meta';
-        meta.textContent = `${m.total_flows.toLocaleString()} flows · ${m.attack_flows.toLocaleString()} attack · ${(m.unknown_flows || 0).toLocaleString()} unknown`;
-        left.appendChild(range);
-        left.appendChild(meta);
-
-        const tags = document.createElement('div');
-        tags.className = 'insight-tags';
-        const status = classifyStatus(m);
-        const riskChip = document.createElement('span');
-        riskChip.className = status.level === 'high' ? 'risk-high' : status.level === 'medium' ? 'risk-med' : 'risk-low';
-        riskChip.textContent = status.label;
-        const pulse = document.createElement('span');
-        pulse.className = 'badge';
-        pulse.innerHTML = `<span class="badge-dot"></span>Window ${w.id}`;
-        tags.appendChild(riskChip);
-        tags.appendChild(pulse);
-
-        header.appendChild(left);
-        header.appendChild(tags);
-
-        const actions = document.createElement('div');
-        actions.className = 'insight-actions';
-        const button = document.createElement('button');
-        button.className = 'insight-toggle';
-        button.type = 'button';
-        button.textContent = 'View LLM Analysis';
-
-        const summary = document.createElement('div');
-        summary.className = 'insight-summary';
-        summary.textContent = w.llm_summary || 'No LLM analysis yet for this window.';
-        summary.hidden = true;
-
-        button.addEventListener('click', () => {
-          const showing = !summary.hidden;
-          summary.hidden = showing;
-          button.textContent = showing ? 'View LLM Analysis' : 'Hide LLM Analysis';
-        });
-
-        actions.appendChild(button);
-
-        card.appendChild(header);
-        card.appendChild(actions);
-        card.appendChild(summary);
-        container.appendChild(card);
-      });
-    }
-
-    function updateProSignals(windows) {
-      const riskEl = document.getElementById('pro-risk');
-      const confidenceEl = document.getElementById('pro-confidence');
-      const velocityEl = document.getElementById('pro-velocity');
-      const watchlistEl = document.getElementById('pro-watchlist');
-
-      if (!windows || windows.length === 0) {
-        riskEl.textContent = confidenceEl.textContent = velocityEl.textContent = watchlistEl.textContent = '–';
-        return;
-      }
-
-      const sorted = [...windows].sort((a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time));
-      const latest = sorted[sorted.length - 1];
-      const recent = sorted.slice(-3);
-
-      const total = latest.metrics.total_flows || 0;
-      const attackRatio = total > 0 ? (latest.metrics.attack_flows / total) * 100 : 0;
-      const unknownRatio = total > 0 ? (latest.metrics.unknown_flows / total) * 100 : 0;
-      const composite = Math.min(100, Math.round(attackRatio * 0.7 + unknownRatio * 0.6));
-      riskEl.textContent = `${composite}% risk pressure`;
-
-      const varianceWindow = recent.map(w => (w.metrics.attack_flows / Math.max(1, w.metrics.total_flows)));
-      const mean = varianceWindow.reduce((a, b) => a + b, 0) / Math.max(varianceWindow.length, 1);
-      const stdev = Math.sqrt(
-        varianceWindow.reduce((acc, v) => acc + Math.pow(v - mean, 2), 0) /
-        Math.max(varianceWindow.length, 1)
-      );
-      const confidence = 100 - Math.round(stdev * 3000);
-      confidenceEl.textContent = `${Math.max(40, Math.min(confidence, 99))}% stable`;
-
-      const lastTwo = sorted.slice(-2);
-      if (lastTwo.length === 2) {
-        const prev = lastTwo[0].metrics.attack_flows;
-        const curr = lastTwo[1].metrics.attack_flows;
-        const delta = curr - prev;
-        const trend = delta === 0 ? 'steady' : delta > 0 ? 'rising' : 'cooling';
-        const pct = prev > 0 ? Math.round((delta / prev) * 100) : delta * 100;
-        velocityEl.textContent = `${trend} (${pct >= 0 ? '+' : ''}${pct}%)`;
-      } else {
-        velocityEl.textContent = 'n/a';
-      }
-
-      const labelCounts = {};
-      recent.forEach(w => {
-        Object.entries(w.metrics.attacks_per_label || {}).forEach(([label, count]) => {
-          labelCounts[label] = (labelCounts[label] || 0) + count;
-        });
-      });
-      const top = Object.entries(labelCounts).sort((a, b) => b[1] - a[1])[0];
-      watchlistEl.textContent = top ? `${top[0]} ↑` : 'No signals yet';
-    }
-
-    async function loadDashboard() {
+    async function refresh() {
       try {
         clearError();
-
         const windows = await fetchWindows();
+        const now = new Date();
+        refreshStatus.textContent = `Last refresh: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} UTC`;
 
         updateSummary(windows);
-        updateLatest(windows);
-        renderInsights(windows);
-        updateProSignals(windows);
+        updateLatestWindow(windows);
+        updateInsights(windows);
         updateTable(windows);
         updateTimeSeriesChart(windows);
         updateAttackTypesChart(windows);
-
-        const now = new Date();
-        refreshStatus.textContent = 'Last refresh: ' + now.toLocaleTimeString();
-      } catch (error) {
-        console.error(error);
-        setError('Failed to load data from /api/windows. Check that netmon-api.service is running and reachable from this page.');
+        updateProSignals(windows);
+      } catch (err) {
+        console.error(err);
+        setError(err.message || 'Failed to fetch windows');
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      loadDashboard();
-      setInterval(loadDashboard, 60000);
-    });
+    refresh();
+    setInterval(refresh, 60000);
   </script>
 </body>
 </html>
