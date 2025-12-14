@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NetMon Dashboard – moeinshafi.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-elevated: rgba(15, 23, 42, 0.95);
+      --bg-soft: rgba(15, 23, 42, 0.7);
+      --border-subtle: rgba(148, 163, 184, 0.25);
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.18);
+      --accent-2: #38bdf8;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.8);
+      --radius-xl: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 40%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .title-pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 14px rgba(34, 197, 94, 0.8);
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    h1 span {
+      color: var(--accent-2);
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 520px;
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .meta strong {
+      color: var(--text-main);
+    }
+
+    .meta-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .card-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      flex: 1 1 120px;
+      min-width: 0;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .stat-value-accent {
+      color: var(--accent);
+    }
+
+    .stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .stat-chip span {
+      font-weight: 500;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent-2);
+    }
+
+    .latest-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .latest-summary {
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      font-size: 12px;
+      color: var(--text-main);
+      max-height: 140px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 11px;
+    }
+
+    .pill {
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text-muted);
+    }
+
+    .pill strong {
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .chart-wrapper {
+      margin-top: 4px;
+      position: relative;
+      height: 220px;
+    }
+
+    .small-chart {
+      height: 200px;
+    }
+
+    .windows-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    .windows-table th,
+    .windows-table td {
+      padding: 6px 6px;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.85);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .windows-table th {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .windows-table tr:hover td {
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .chip-green {
+      background: rgba(22, 163, 74, 0.12);
+      color: #4ade80;
+      border-color: rgba(22, 163, 74, 0.6);
+    }
+
+    .chip-red {
+      background: rgba(220, 38, 38, 0.12);
+      color: #fca5a5;
+      border-color: rgba(220, 38, 38, 0.6);
+    }
+
+    .chip-muted {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+    }
+
+    .footer-note {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.7;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .error-banner {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+      font-size: 12px;
+    }
+
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        rgba(30, 64, 175, 0.12),
+        rgba(15, 23, 42, 0.9),
+        rgba(30, 64, 175, 0.12)
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+      border-radius: 12px;
+      height: 120px;
+      margin-top: 6px;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0%;
+      }
+      100% {
+        background-position: -200% 0%;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body {
+        padding: 16px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .meta {
+        align-items: flex-start;
+      }
+      .grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 900px) {
+      .grid-col-4 {
+        grid-column: span 4 / span 4;
+      }
+      .grid-col-8 {
+        grid-column: span 8 / span 8;
+      }
+      .grid-col-6 {
+        grid-column: span 6 / span 6;
+      }
+      .grid-col-12 {
+        grid-column: span 12 / span 12;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="title-block">
+        <div class="title-pill">
+          <span class="title-pill-dot"></span>
+          <span>Live Traffic Monitor (Last Hour)</span>
+        </div>
+        <h1>Net<span>Mon</span> – moeinshafi.com</h1>
+        <p class="subtitle">
+          5-minute windows captured from the VPS interface, aggregated into flows, classified by your ML model,
+          and summarized by a local LLM. This page polls the API and visualizes the last 12 windows (≈1 hour).
+        </p>
+      </div>
+      <div class="meta">
+        <div class="meta-pill">
+          <span class="meta-pill-dot"></span>
+          <span id="refresh-status">Last refresh: –</span>
+        </div>
+        <div>Auto-refresh every <strong>60 seconds</strong></div>
+      </div>
+    </header>
+
+    <main>
+      <div id="error-banner" class="error-banner" style="display:none;"></div>
+
+      <div class="grid">
+        <!-- SUMMARY CARD -->
+        <section class="card grid-col-4">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Overall</div>
+                <div class="card-sub">Aggregated metrics across all visible windows</div>
+              </div>
+            </div>
+
+            <div id="summary-skeleton" class="skeleton"></div>
+
+            <div id="summary-content" style="display:none;">
+              <div class="stat-row">
+                <div class="stat">
+                  <div class="stat-label">Total flows</div>
+                  <div class="stat-value" id="stat-total-flows">–</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Total packets</div>
+                  <div class="stat-value" id="stat-total-packets">–</div>
+                </div>
+              </div>
+              <div class="stat-row">
+                <div class="stat">
+                  <div class="stat-label">Benign flows</div>
+                  <div class="stat-value" id="stat-benign-flows">–</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-label">Attack flows</div>
+                  <div class="stat-value stat-value-accent" id="stat-attack-flows">–</div>
+                  <div class="stat-chip">
+                    <span id="stat-attack-percent">–%</span>
+                    <span>of flows flagged as attack</span>
+                  </div>
+                </div>
+              </div>
+              <div class="footer-note">
+                <span>All values are from the last 12 windows (up to 60 minutes).</span>
+                <span id="window-count-note"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LATEST WINDOW CARD -->
+        <section class="card grid-col-8">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Latest 5-minute window</div>
+                <div class="card-sub">Most recent capture and classification result</div>
+              </div>
+              <span class="badge">
+                <span class="badge-dot"></span>
+                <span id="latest-risk-label">Risk: –</span>
+              </span>
+            </div>
+
+            <div id="latest-skeleton" class="skeleton"></div>
+
+            <div id="latest-content" style="display:none;">
+              <div class="latest-meta">
+                <span id="latest-range">Window: –</span>
+                <span id="latest-flows">Flows: –</span>
+                <span id="latest-packets">Packets: –</span>
+                <span id="latest-benign">Benign: –</span>
+                <span id="latest-attacks">Attacks: –</span>
+              </div>
+
+              <div class="pill-list" id="latest-labels"></div>
+
+              <div class="latest-summary" id="latest-summary">
+                No summary yet.
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid">
+        <!-- TIME SERIES CHART -->
+        <section class="card grid-col-8">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Traffic over time</div>
+                <div class="card-sub">Flows and attack flows per 5-minute window</div>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chart-time-series"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- ATTACK TYPE DISTRIBUTION -->
+        <section class="card grid-col-4">
+          <div class="card-inner">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Attack types</div>
+                <div class="card-sub">Distribution of predicted attack labels</div>
+              </div>
+            </div>
+            <div class="chart-wrapper small-chart">
+              <canvas id="chart-attack-types"></canvas>
+            </div>
+            <div class="footer-note">
+              <span id="attack-types-note">Includes all attack-labelled flows across the visible windows.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- WINDOWS TABLE -->
+      <section class="card grid-col-12">
+        <div class="card-inner">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Windows</div>
+              <div class="card-sub">Raw metrics per 5-minute capture</div>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="windows-table" id="windows-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Start (UTC)</th>
+                  <th>End (UTC)</th>
+                  <th>Flows</th>
+                  <th>Packets</th>
+                  <th>Benign</th>
+                  <th>Attack</th>
+                  <th>Attack %</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="windows-table-body">
+                <tr>
+                  <td colspan="9" style="text-align:center; color:var(--text-muted); padding:10px;">
+                    Waiting for data… capture needs at least one 5-minute window.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const summarySkeleton = document.getElementById('summary-skeleton');
+    const summaryContent = document.getElementById('summary-content');
+    const latestSkeleton = document.getElementById('latest-skeleton');
+    const latestContent = document.getElementById('latest-content');
+    const errorBanner = document.getElementById('error-banner');
+    const refreshStatus = document.getElementById('refresh-status');
+
+    const statTotalFlows = document.getElementById('stat-total-flows');
+    const statTotalPackets = document.getElementById('stat-total-packets');
+    const statBenignFlows = document.getElementById('stat-benign-flows');
+    const statAttackFlows = document.getElementById('stat-attack-flows');
+    const statAttackPercent = document.getElementById('stat-attack-percent');
+    const windowCountNote = document.getElementById('window-count-note');
+
+    const latestRange = document.getElementById('latest-range');
+    const latestFlows = document.getElementById('latest-flows');
+    const latestPackets = document.getElementById('latest-packets');
+    const latestBenign = document.getElementById('latest-benign');
+    const latestAttacks = document.getElementById('latest-attacks');
+    const latestLabels = document.getElementById('latest-labels');
+    const latestSummary = document.getElementById('latest-summary');
+    const latestRiskLabel = document.getElementById('latest-risk-label');
+
+    const windowsTableBody = document.getElementById('windows-table-body');
+
+    let chartTimeSeries = null;
+    let chartAttackTypes = null;
+
+    function formatTimeLabel(iso) {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatUtc(iso) {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso;
+      return d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, 'Z');
+    }
+
+    function computeRiskLabel(attackPercent) {
+      if (attackPercent >= 50) return { label: 'Risk: High', className: 'chip chip-red' };
+      if (attackPercent >= 10) return { label: 'Risk: Medium', className: 'chip chip-muted' };
+      return { label: 'Risk: Low', className: 'chip chip-green' };
+    }
+
+    function setError(message) {
+      errorBanner.style.display = 'block';
+      errorBanner.textContent = message;
+    }
+
+    function clearError() {
+      errorBanner.style.display = 'none';
+      errorBanner.textContent = '';
+    }
+
+    async function fetchWindows() {
+      const res = await fetch('/api/windows', {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) {
+        throw new Error('API returned status ' + res.status);
+      }
+      return await res.json();
+    }
+
+    function updateSummary(windows) {
+      summarySkeleton.style.display = 'none';
+      summaryContent.style.display = 'block';
+
+      if (!windows || windows.length === 0) {
+        statTotalFlows.textContent = '0';
+        statTotalPackets.textContent = '0';
+        statBenignFlows.textContent = '0';
+        statAttackFlows.textContent = '0';
+        statAttackPercent.textContent = '0%';
+        windowCountNote.textContent = 'No windows yet.';
+        return;
+      }
+
+      let totalFlows = 0;
+      let totalPackets = 0;
+      let benignFlows = 0;
+      let attackFlows = 0;
+
+      windows.forEach(w => {
+        const m = w.metrics;
+        totalFlows += m.total_flows || 0;
+        totalPackets += m.total_packets || 0;
+        benignFlows += m.benign_flows || 0;
+        attackFlows += m.attack_flows || 0;
+      });
+
+      const attackPercent = totalFlows > 0 ? (attackFlows / totalFlows) * 100 : 0;
+
+      statTotalFlows.textContent = totalFlows.toLocaleString();
+      statTotalPackets.textContent = totalPackets.toLocaleString();
+      statBenignFlows.textContent = benignFlows.toLocaleString();
+      statAttackFlows.textContent = attackFlows.toLocaleString();
+      statAttackPercent.textContent = attackPercent.toFixed(1) + '%';
+      windowCountNote.textContent = `${windows.length} window(s) currently displayed.`;
+    }
+
+
+function classifyStatus(metrics) {
+  const total = metrics.total_flows || 0;
+  const attack = metrics.attack_flows || 0;
+  const unknown = metrics.unknown_flows || 0;
+
+  if (total === 0) {
+    return { label: "No data", level: "neutral" };
+  }
+
+  const attackRatio = attack / total;
+  const unknownRatio = unknown / total;
+
+  if (attackRatio > 0.3) {
+    return { label: "High suspected attack activity", level: "high" };
+  }
+  if (attackRatio > 0.05 || unknownRatio > 0.3) {
+    return { label: "Requires attention", level: "medium" };
+  }
+  return { label: "Mostly benign", level: "low" };
+}
+
+function renderLatestWindow(latest) {
+  const m = latest.metrics;
+  const status = classifyStatus(m);
+  const unknownFlows = m.unknown_flows || 0;
+
+  const attacksPerLabel = m.attacks_per_label || {};
+  const labelsHtml = Object.entries(attacksPerLabel)
+    .map(([label, count]) => `<div class="label-row"><span>${label}</span><span>${count}</span></div>`)
+    .join("");
+
+  document.getElementById("latest-window").innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <h2>Current 5-minute window</h2>
+        <span class="status status-${status.level}">${status.label}</span>
+      </div>
+      <div class="card-body">
+        <div class="stat-grid">
+          <div class="stat">
+            <span class="stat-label">Total flows</span>
+            <span class="stat-value">${m.total_flows}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Benign flows</span>
+            <span class="stat-value">${m.benign_flows}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Attack flows</span>
+            <span class="stat-value">${m.attack_flows}</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Unknown / Needs investigation</span>
+            <span class="stat-value">${unknownFlows}</span>
+          </div>
+        </div>
+
+        <h3>Attack label breakdown</h3>
+        <div class="labels-grid">
+          ${labelsHtml || "<div class=\"muted\">No attack labels in this window.</div>"}
+        </div>
+
+        <h3>Summary</h3>
+        <pre class="summary-text">${latest.llm_summary}</pre>
+      </div>
+    </div>
+  `;
+}
+
+
+    function updateLatest(windows) {
+      latestSkeleton.style.display = 'none';
+      latestContent.style.display = 'block';
+
+      if (!windows || windows.length === 0) {
+        latestRange.textContent = 'Window: –';
+        latestFlows.textContent = 'Flows: 0';
+        latestPackets.textContent = 'Packets: 0';
+        latestBenign.textContent = 'Benign: 0';
+        latestAttacks.textContent = 'Attacks: 0';
+        latestLabels.innerHTML = '';
+        latestSummary.textContent = 'No summary yet.';
+        latestRiskLabel.textContent = 'Risk: –';
+        latestRiskLabel.className = '';
+        return;
+      }
+
+      const sorted = [...windows].sort(
+        (a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
+      );
+      const latest = sorted[sorted.length - 1];
+      const m = latest.metrics;
+
+      const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
+      const risk = computeRiskLabel(attackPercent);
+
+      latestRange.textContent = `Window: ${formatUtc(m.start_time)} → ${formatUtc(m.end_time)}`;
+      latestFlows.textContent = `Flows: ${m.total_flows.toLocaleString()}`;
+      latestPackets.textContent = `Packets: ${m.total_packets.toLocaleString()}`;
+      latestBenign.textContent = `Benign: ${m.benign_flows.toLocaleString()}`;
+      latestAttacks.textContent = `Attacks: ${m.attack_flows.toLocaleString()}`;
+
+      latestLabels.innerHTML = '';
+      const labels = m.attacks_per_label || {};
+      const entries = Object.entries(labels);
+      if (entries.length === 0) {
+        const pill = document.createElement('div');
+        pill.className = 'pill';
+        pill.textContent = 'No attack labels recorded for this window.';
+        latestLabels.appendChild(pill);
+      } else {
+        entries
+          .sort((a, b) => b[1] - a[1])
+          .forEach(([label, count]) => {
+            const pill = document.createElement('div');
+            pill.className = 'pill';
+            pill.innerHTML = `<strong>${label}</strong> · ${count.toLocaleString()} flows`;
+            latestLabels.appendChild(pill);
+          });
+      }
+
+      latestSummary.textContent = latest.llm_summary || 'No summary available.';
+      latestRiskLabel.textContent = risk.label;
+      latestRiskLabel.className = risk.className;
+    }
+
+    function updateTable(windows) {
+      windowsTableBody.innerHTML = '';
+
+      if (!windows || windows.length === 0) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 9;
+        td.style.textAlign = 'center';
+        td.style.color = 'var(--text-muted)';
+        td.style.padding = '10px';
+        td.textContent = 'No windows yet – wait at least 5 minutes for the first capture.';
+        tr.appendChild(td);
+        windowsTableBody.appendChild(tr);
+        return;
+      }
+
+      const sorted = [...windows].sort(
+        (a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
+      );
+
+      sorted.forEach((w, idx) => {
+        const m = w.metrics;
+        const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
+        const risk = computeRiskLabel(attackPercent);
+
+        const tr = document.createElement('tr');
+
+        const cols = [
+          idx + 1,
+          formatUtc(m.start_time),
+          formatUtc(m.end_time),
+          m.total_flows.toLocaleString(),
+          m.total_packets.toLocaleString(),
+          m.benign_flows.toLocaleString(),
+          m.attack_flows.toLocaleString(),
+          attackPercent.toFixed(1) + '%'
+        ];
+
+        cols.forEach(value => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          tr.appendChild(td);
+        });
+
+        const riskTd = document.createElement('td');
+        const riskChip = document.createElement('span');
+        riskChip.className = risk.className;
+        riskChip.textContent = risk.label.replace('Risk: ', '');
+        riskTd.appendChild(riskChip);
+        tr.appendChild(riskTd);
+
+        windowsTableBody.appendChild(tr);
+      });
+    }
+
+    function updateTimeSeriesChart(windows) {
+      const ctx = document.getElementById('chart-time-series').getContext('2d');
+
+      if (!windows || windows.length === 0) {
+        if (chartTimeSeries) {
+          chartTimeSeries.destroy();
+          chartTimeSeries = null;
+        }
+        return;
+      }
+
+      const sorted = [...windows].sort(
+        (a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
+      );
+      const labels = sorted.map(w => formatTimeLabel(w.metrics.start_time));
+      const flows = sorted.map(w => w.metrics.total_flows || 0);
+      const attacks = sorted.map(w => w.metrics.attack_flows || 0);
+
+      if (chartTimeSeries) {
+        chartTimeSeries.destroy();
+      }
+
+      chartTimeSeries = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Total flows',
+              data: flows,
+              tension: 0.35
+            },
+            {
+              label: 'Attack flows',
+              data: attacks,
+              tension: 0.35
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: '#e5e7eb',
+                font: { size: 11 }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: '#9ca3af',
+                font: { size: 11 }
+              },
+              grid: {
+                color: 'rgba(51, 65, 85, 0.6)'
+              }
+            },
+            y: {
+              ticks: {
+                color: '#9ca3af',
+                font: { size: 11 }
+              },
+              grid: {
+                color: 'rgba(30, 41, 59, 0.8)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateAttackTypesChart(windows) {
+      const ctx = document.getElementById('chart-attack-types').getContext('2d');
+
+      if (!windows || windows.length === 0) {
+        if (chartAttackTypes) {
+          chartAttackTypes.destroy();
+          chartAttackTypes = null;
+        }
+        return;
+      }
+
+      const attackTypeCounts = {};
+
+      windows.forEach(w => {
+        const labels = w.metrics.attacks_per_label || {};
+        Object.entries(labels).forEach(([label, count]) => {
+          if (!attackTypeCounts[label]) attackTypeCounts[label] = 0;
+          attackTypeCounts[label] += count;
+        });
+      });
+
+      const entries = Object.entries(attackTypeCounts).sort((a, b) => b[1] - a[1]);
+      const labels = entries.map(e => e[0]);
+      const values = entries.map(e => e[1]);
+
+      if (chartAttackTypes) {
+        chartAttackTypes.destroy();
+      }
+
+      chartAttackTypes = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [
+            {
+              data: values
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#e5e7eb',
+                font: { size: 11 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadDashboard() {
+      try {
+        clearError();
+
+        const windows = await fetchWindows();
+
+        updateSummary(windows);
+        updateLatest(windows);
+        updateTable(windows);
+        updateTimeSeriesChart(windows);
+        updateAttackTypesChart(windows);
+
+        const now = new Date();
+        refreshStatus.textContent = 'Last refresh: ' + now.toLocaleTimeString();
+      } catch (error) {
+        console.error(error);
+        setError('Failed to load data from /api/windows. Check that netmon-api.service is running and reachable from this page.');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadDashboard();
+      setInterval(loadDashboard, 60000);
+    });
+  </script>
+</body>
+</html>
