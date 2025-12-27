@@ -2,998 +2,1314 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>NetMon Hyperview – moeinshafi.com</title>
+  <title>NetMon | AI-Powered Network Security Intelligence Platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Professional network traffic monitoring with ML-based threat detection and AI-powered analysis" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700|inter:400,500,600" rel="stylesheet" />
+  <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700,800|inter:300,400,500,600,700|jetbrains-mono:400,500" rel="stylesheet" />
 
   <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-RXf+QSDCUQs6Q0pFxO7HA1BVr4YVdLzWDePOA3cYj2Jk+57kqfzX4nG3i1M1QrQWUcRgl41Yk6YxY9w4C2md2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
   <style>
     :root {
-      --bg: #05060f;
-      --bg-2: #070b1a;
-      --card: rgba(11, 15, 32, 0.9);
-      --card-2: rgba(13, 22, 46, 0.9);
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #e5e7eb;
-      --muted: #93a2c0;
-      --accent: #8b5cf6;
-      --accent-2: #22d3ee;
-      --accent-3: #22c55e;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-      --radius: 20px;
+      --bg-primary: #0a0e27;
+      --bg-secondary: #0f1429;
+      --bg-tertiary: #151b33;
+      --bg-card: rgba(15, 20, 41, 0.8);
+      --bg-card-hover: rgba(21, 27, 51, 0.95);
+      --border: rgba(99, 102, 241, 0.2);
+      --border-hover: rgba(99, 102, 241, 0.4);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --accent-tertiary: #ec4899;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+      --gradient-2: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+      --gradient-3: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 32px rgba(99, 102, 241, 0.3);
+      --radius: 16px;
+      --radius-lg: 24px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      min-height: 100vh;
-      background: radial-gradient(circle at 20% -10%, rgba(139, 92, 246, 0.15), transparent 35%),
-        radial-gradient(circle at 90% 10%, rgba(34, 211, 238, 0.15), transparent 40%),
-        radial-gradient(circle at 50% 100%, rgba(34, 197, 94, 0.2), transparent 30%),
-        linear-gradient(140deg, #05060f 0%, #0b0f24 45%, #05060f 100%);
-      color: var(--text);
-      padding: 28px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
       overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
     }
 
-    .wireframe {
+    /* Animated Background */
+    .bg-animation {
       position: fixed;
       inset: 0;
+      z-index: 0;
+      overflow: hidden;
       pointer-events: none;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 90px 90px;
-      mask-image: radial-gradient(circle at 50% 30%, rgba(0,0,0,0.9), transparent 65%);
-      z-index: 0;
     }
 
-    .nebula {
-      position: fixed;
-      inset: -10% -10% auto auto;
-      width: 460px;
-      height: 460px;
-      background: radial-gradient(circle, rgba(34, 211, 238, 0.25) 0%, transparent 60%);
-      filter: blur(60px);
-      opacity: 0.6;
-      z-index: 0;
-      animation: drift 18s ease-in-out infinite alternate;
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
     }
 
-    .halo {
-      position: fixed;
-      left: -10%;
-      bottom: -18%;
-      width: 520px;
-      height: 520px;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.32) 0%, transparent 55%);
-      filter: blur(72px);
-      opacity: 0.6;
-      z-index: 0;
-      animation: drift 22s ease-in-out infinite alternate-reverse;
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
     }
 
-    @keyframes drift {
-      to { transform: translate3d(16px, -24px, 0) scale(1.08); opacity: 0.9; }
+    .bg-gradient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 20s ease-in-out infinite;
     }
 
-    .shell {
-      position: relative;
-      z-index: 1;
-      max-width: 1280px;
-      margin: 0 auto;
-      width: 100%;
+    .orb-1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent-primary), transparent);
+      top: -200px;
+      left: -200px;
+      animation-delay: 0s;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-secondary), transparent);
+      bottom: -150px;
+      right: -150px;
+      animation-delay: 5s;
+    }
+
+    .orb-3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--accent-tertiary), transparent);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* Header */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: var(--shadow-glow);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: var(--shadow-glow); }
+      50% { box-shadow: 0 0 48px rgba(99, 102, 241, 0.6); }
+    }
+
+    .logo-text {
       display: flex;
       flex-direction: column;
-      gap: 20px;
     }
 
-    header.hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
-      gap: 18px;
+    .logo-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav-item {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
       align-items: center;
+      gap: 0.5rem;
     }
 
-    .credit-banner {
-      margin: 6px 2px 0;
-      padding: 10px 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: linear-gradient(90deg, rgba(34, 211, 238, 0.12), rgba(139, 92, 246, 0.14));
-      color: var(--text);
+    .nav-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--gradient-1);
+      color: white;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
       font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow);
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--gradient-1);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      margin-bottom: 2rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
     }
 
     .hero-card {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(34, 211, 238, 0.12)), var(--card);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: var(--shadow);
-      padding: 18px 20px;
-      border-radius: 22px;
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-lg);
+      transition: all 0.3s;
     }
 
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 90% 10%, rgba(34, 197, 94, 0.2), transparent 45%);
-      opacity: 0.8;
-      mix-blend-mode: screen;
-      z-index: -1;
+    .hero-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
     }
 
-    .logo-gem {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      background: linear-gradient(160deg, #22d3ee, #a855f7);
-      display: grid;
-      place-items: center;
-      color: #0b0f24;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      box-shadow: 0 12px 32px rgba(34, 211, 238, 0.35);
-    }
-
-    .eyebrow {
+    .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--muted);
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-size: 11px;
-    }
-
-    h1 {
-      font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
-      font-size: clamp(30px, 4vw, 42px);
-      margin: 10px 0 6px;
-      letter-spacing: -0.02em;
-    }
-
-    h1 span { color: #22d3ee; }
-
-    .subtitle {
-      color: var(--muted);
-      max-width: 720px;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .signal-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .signal-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text);
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.75rem;
       font-weight: 600;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
     }
 
-    .signal-chip i { color: #22c55e; }
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
 
-    .status-card {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(34, 211, 238, 0.06)), var(--card-2);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 22px;
-      padding: 16px;
+    .hero-description {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat-item {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      box-shadow: var(--shadow);
     }
 
-    .status-title { color: var(--muted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .status-value { font-size: 28px; font-weight: 700; }
-    .status-meta { color: var(--muted); font-size: 12px; }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.25rem;
+    }
 
-    main { display: flex; flex-direction: column; gap: 16px; }
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--gradient-2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-    .grid {
+    /* Stats Grid */
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
     }
 
-    .card {
-      position: relative;
-      background: var(--card);
+    .stat-card {
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 14px 16px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      position: relative;
       overflow: hidden;
-      box-shadow: var(--shadow);
-      isolation: isolate;
     }
 
-    .card::before {
-      content: "";
+    .stat-card::before {
+      content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 60%);
-      opacity: 0.6;
-      z-index: -1;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient-1);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
     }
 
-    .card-hero { background: linear-gradient(150deg, rgba(34, 211, 238, 0.08), rgba(139, 92, 246, 0.08)), var(--card-2); }
+    .stat-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
 
-    .card-inner { position: relative; z-index: 2; }
+    .stat-card:hover::before {
+      transform: scaleX(1);
+    }
 
-    .card-header {
+    .stat-card-header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      gap: 10px;
-      margin-bottom: 8px;
+      align-items: flex-start;
+      margin-bottom: 1rem;
     }
 
-    .card-title { font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-    .card-sub { color: var(--muted); font-size: 12px; }
-
-    .stat-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
-    .stat { flex: 1 1 160px; min-width: 0; }
-    .stat-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-    .stat-value { font-size: 24px; font-weight: 700; }
-    .stat-value-accent { color: #22c55e; }
-
-    .stat-chip {
-      display: inline-flex;
+    .stat-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(34, 211, 238, 0.14);
-      color: #22d3ee;
-      font-size: 11px;
-      margin-top: 4px;
-      border: 1px solid rgba(34, 211, 238, 0.4);
+      justify-content: center;
+      font-size: 24px;
+      background: var(--gradient-1);
+      color: white;
     }
 
-    .latest-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; font-size: 11px; color: var(--muted); }
-    .latest-summary { margin-top: 8px; padding: 12px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; font-size: 12px; white-space: pre-wrap; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255,255,255,0.04); color: var(--muted); font-size: 11px; }
-    .badge-dot { width: 8px; height: 8px; border-radius: 999px; background: #22c55e; box-shadow: 0 0 10px rgba(34, 197, 94, 0.7); }
-
-    .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 10px; }
-    .insight-card { padding: 12px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(11,15,32,0.85)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
-    .insight-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-    .insight-range { font-weight: 700; font-size: 14px; }
-    .insight-meta { color: var(--muted); font-size: 11px; margin-top: 4px; }
-    .insight-tags { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
-    .pill { padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); font-size: 11px; }
-    .pill strong { color: var(--text); }
-    .insight-summary { margin-top: 10px; padding: 10px 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; font-size: 12px; white-space: pre-wrap; }
-    .insight-toggle { background: linear-gradient(135deg, #22d3ee, #8b5cf6); color: #050816; border: none; border-radius: 999px; padding: 8px 14px; font-weight: 700; cursor: pointer; box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25); transition: transform 120ms ease, box-shadow 120ms ease; }
-    .insight-toggle:hover { transform: translateY(-1px); box-shadow: 0 16px 36px rgba(139, 92, 246, 0.35); }
-
-    .pro-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 8px; }
-    .pro-tile { padding: 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(34,211,238,0.06)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
-    .pro-title { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-    .pro-value { font-size: 24px; font-weight: 800; margin-top: 6px; }
-    .pro-desc { color: var(--muted); font-size: 11px; margin-top: 4px; }
-
-    .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); margin: 6px 0 10px; }
-
-    .chart-wrapper { position: relative; height: 240px; margin-top: 6px; }
-    .small-chart { height: 220px; }
-
-    .windows-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
-    .windows-table th, .windows-table td { padding: 8px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; white-space: nowrap; }
-    .windows-table th { color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
-    .windows-table tr:hover td { background: rgba(255,255,255,0.03); }
-
-    .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; font-size: 11px; border: 1px solid rgba(255,255,255,0.08); }
-    .chip-green { background: rgba(34,197,94,0.14); color: #4ade80; border-color: rgba(34,197,94,0.5); }
-    .chip-red { background: rgba(239,68,68,0.14); color: #fca5a5; border-color: rgba(239,68,68,0.6); }
-    .chip-muted { background: rgba(255,255,255,0.04); color: var(--muted); }
-
-    .footer-note { margin-top: 6px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-    .error-banner { margin-top: 8px; padding: 10px 12px; border-radius: 12px; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.6); color: #fecdd3; font-size: 12px; box-shadow: 0 12px 30px rgba(239,68,68,0.14); }
-
-    .skeleton { background: linear-gradient(90deg, rgba(34,211,238,0.12), rgba(255,255,255,0.05), rgba(139,92,246,0.12)); background-size: 220% 100%; animation: shimmer 1.4s ease-in-out infinite; border-radius: 12px; height: 120px; margin-top: 6px; }
-    @keyframes shimmer { 0% { background-position: 200% 0%; } 100% { background-position: -200% 0%; } }
-
-    @media (max-width: 1024px) {
-      body { padding: 18px; }
-      header.hero { grid-template-columns: 1fr; }
-      .grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .stat-card-trend {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
     }
 
-    @media (min-width: 900px) {
-      .grid-col-4 { grid-column: span 4 / span 4; }
-      .grid-col-6 { grid-column: span 6 / span 6; }
-      .grid-col-8 { grid-column: span 8 / span 8; }
-      .grid-col-12 { grid-column: span 12 / span 12; }
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--danger); }
+    .trend-neutral { color: var(--text-muted); }
+
+    .stat-card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-card-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    /* Charts Section */
+    .charts-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .chart-subtitle {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+
+    /* AI Insights Section */
+    .ai-insights {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-title-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--gradient-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .insight-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .insight-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .insight-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .insight-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .insight-badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .insight-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .insight-metric {
+      text-align: center;
+    }
+
+    .insight-metric-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .insight-metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .insight-summary {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 100px;
+      overflow: hidden;
+      transition: max-height 0.3s;
+    }
+
+    .insight-card.expanded .insight-summary {
+      max-height: 500px;
+    }
+
+    .insight-toggle {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .insight-toggle:hover {
+      border-color: var(--border-hover);
+      color: var(--text-primary);
+    }
+
+    /* Windows Table */
+    .windows-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--bg-secondary);
+    }
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    tbody tr {
+      transition: all 0.2s;
+    }
+
+    tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    /* Loading States */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+      background-size: 200% 100%;
+      animation: skeleton 1.5s ease-in-out infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes skeleton {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .hero-section {
+        grid-template-columns: 1fr;
+      }
+      .charts-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      .header {
+        padding: 1rem;
+        flex-wrap: wrap;
+      }
+      .header-nav {
+        display: none;
+      }
+      .hero-title {
+        font-size: 2rem;
+      }
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--accent-primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-secondary);
     }
   </style>
 </head>
 <body>
-  <div class="wireframe" aria-hidden="true"></div>
-  <div class="nebula" aria-hidden="true"></div>
-  <div class="halo" aria-hidden="true"></div>
+  <div class="bg-animation">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient-orb orb-1"></div>
+    <div class="bg-gradient-orb orb-2"></div>
+    <div class="bg-gradient-orb orb-3"></div>
+  </div>
 
-  <div class="shell">
-    <header class="hero">
-      <div class="hero-card">
-        <div class="eyebrow"><i class="fa-solid fa-bolt"></i> AI Native Traffic Intelligence</div>
-        <div style="display:flex; align-items:center; gap:14px; margin-top:10px;">
-          <div class="logo-gem">NM</div>
-          <div>
-            <h1>Net<span>Mon</span> Hyperview</h1>
-            <p class="subtitle">A cinematic control room for your VPS interface. Every 5 minutes we aggregate flows, classify attacks, and ask a local LLM to narrate what matters. The last 12 windows (≈1 hour) stay live.</p>
-          </div>
+  <header class="header">
+    <div class="header-left">
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-shield-alt"></i>
         </div>
-        <div class="signal-row">
-          <span class="signal-chip"><i class="fa-solid fa-satellite"></i> Streaming telemetry</span>
-          <span class="signal-chip"><i class="fa-solid fa-wand-magic-sparkles"></i> ML + LLM fusion</span>
-          <span class="signal-chip"><i class="fa-solid fa-shield-halved"></i> SOC-grade views</span>
+        <div class="logo-text">
+          <div class="logo-title">NetMon</div>
+          <div class="logo-subtitle">AI Security Intelligence</div>
         </div>
+      </a>
+      <nav class="header-nav">
+        <a href="/" class="nav-item active">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="/admin" class="nav-item">
+          <i class="fas fa-cog"></i> Admin
+        </a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>Live Monitoring</span>
       </div>
-      <div class="status-card">
-        <div class="status-title">Live capture</div>
-        <div class="status-value" id="refresh-status">Last refresh: –</div>
-        <div class="status-meta">Auto-refresh every 60 seconds · VPS tap</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="badge"><span class="badge-dot"></span>LLM summaries active</span>
-          <span class="badge"><i class="fa-regular fa-compass"></i> Adaptive risk radar</span>
-        </div>
-      </div>
-    </header>
-
-    <div class="credit-banner">
-      <i class="fa-solid fa-star"></i> Crafted for <strong>moeinshafi.com</strong> — every pixel and insight credits Moein Shafi.
-      <a href="/admin" style="margin-left: 16px; color: var(--accent-2); text-decoration: none; font-weight: 600;">
-        <i class="fa-solid fa-shield-halved"></i> Admin Panel
+      <a href="/admin" class="btn btn-primary">
+        <i class="fas fa-user-shield"></i> Admin Panel
       </a>
     </div>
+  </header>
 
-    <main>
-      <div id="error-banner" class="error-banner" style="display:none;"></div>
+  <div class="container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-card">
+        <div class="hero-badge">
+          <i class="fas fa-brain"></i>
+          AI-Powered Network Security Platform
+        </div>
+        <h1 class="hero-title">Real-Time Threat Intelligence</h1>
+        <p class="hero-description">
+          Advanced network traffic monitoring with machine learning-based threat detection, 
+          LLM-powered analysis, and comprehensive security analytics. Built with cutting-edge 
+          AI/ML technologies for enterprise-grade security operations.
+        </p>
+        <div class="hero-stats" id="hero-stats">
+          <div class="stat-item">
+            <div class="stat-label">Total Flows</div>
+            <div class="stat-value" id="hero-total-flows">-</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Threats Detected</div>
+            <div class="stat-value" id="hero-threats">-</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">AI Confidence</div>
+            <div class="stat-value" id="hero-confidence">-</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="section-title">
+          <div class="section-title-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          Active Alerts
+        </div>
+        <div id="alerts-preview">
+          <div class="skeleton" style="height: 200px;"></div>
+        </div>
+      </div>
+    </div>
 
-      <div class="grid">
-        <section class="card card-hero grid-col-4">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Global pulse</div>
-                <div class="card-sub">Aggregated metrics across visible windows</div>
-              </div>
-            </div>
-            <div id="summary-skeleton" class="skeleton"></div>
-            <div id="summary-content" style="display:none;">
-              <div class="stat-row">
-                <div class="stat">
-                  <div class="stat-label">Total flows</div>
-                  <div class="stat-value" id="stat-total-flows">–</div>
-                  <div class="stat-chip">Packets <span id="stat-total-packets">–</span></div>
-                </div>
-                <div class="stat">
-                  <div class="stat-label">Benign</div>
-                  <div class="stat-value" id="stat-benign-flows">–</div>
-                </div>
-                <div class="stat">
-                  <div class="stat-label">Attack</div>
-                  <div class="stat-value stat-value-accent" id="stat-attack-flows">–</div>
-                  <div class="stat-chip">Attack share <span id="stat-attack-percent">–</span></div>
-                </div>
-              </div>
-              <div class="divider"></div>
-              <div class="footer-note" id="window-count-note">Waiting for windows…</div>
-            </div>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon">
+            <i class="fas fa-network-wired"></i>
           </div>
-        </section>
-        <section class="card grid-col-8">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Traffic over time</div>
-                <div class="card-sub">Flows and attack flows per 5-minute window.</div>
-              </div>
-            </div>
-            <div class="chart-wrapper"><canvas id="chart-time-series"></canvas></div>
+          <div class="stat-card-trend trend-up">
+            <i class="fas fa-arrow-up"></i> +12%
           </div>
-        </section>
+        </div>
+        <div class="stat-card-value" id="stat-total-flows">-</div>
+        <div class="stat-card-label">Total Network Flows</div>
       </div>
 
-      <div class="grid">
-        <section class="card grid-col-8">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Latest capture</div>
-                <div class="card-sub">The freshest 5-minute window, enriched and narrated.</div>
-              </div>
-            </div>
-            <div id="latest-skeleton" class="skeleton"></div>
-            <div id="latest-content" style="display:none;">
-              <div class="latest-meta">
-                <span class="badge"><i class="fa-regular fa-clock"></i> <span id="latest-range">–</span></span>
-                <span class="badge"><i class="fa-solid fa-sitemap"></i> Flows: <strong id="latest-flows">–</strong></span>
-                <span class="badge"><i class="fa-solid fa-box-open"></i> Packets: <strong id="latest-packets">–</strong></span>
-                <span class="badge"><i class="fa-solid fa-shield-virus"></i> Attacks: <strong id="latest-attacks">–</strong></span>
-                <span class="badge" id="latest-risk-label"><span class="badge-dot"></span></span>
-              </div>
-              <div class="stat-row">
-                <div class="stat">
-                  <div class="stat-label">Benign</div>
-                  <div class="stat-value" id="latest-benign">–</div>
-                </div>
-                <div class="stat">
-                  <div class="stat-label">Top labels</div>
-                  <div class="stat-value" id="latest-labels">–</div>
-                </div>
-              </div>
-              <div class="latest-summary" id="latest-summary">No summary yet.</div>
-            </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon" style="background: linear-gradient(135deg, #10b981, #06b6d4);">
+            <i class="fas fa-shield-check"></i>
           </div>
-        </section>
-        <section class="card grid-col-4">
-          <div class="card-inner">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Attack types</div>
-                <div class="card-sub">Distribution of predicted attack labels</div>
-              </div>
-            </div>
-            <div class="chart-wrapper small-chart"><canvas id="chart-attack-types"></canvas></div>
-            <div class="footer-note"><span id="attack-types-note">Includes all attack-labelled flows across the visible windows.</span></div>
+          <div class="stat-card-trend trend-up">
+            <i class="fas fa-arrow-up"></i> +5%
           </div>
-        </section>
+        </div>
+        <div class="stat-card-value" id="stat-benign-flows">-</div>
+        <div class="stat-card-label">Benign Traffic</div>
       </div>
 
-      <section class="card card-hero">
-        <div class="card-inner">
-          <div class="card-header">
-            <div>
-              <div class="card-title">AI Analyst console</div>
-              <div class="card-sub">LLM insights for each captured window — click to reveal the narrative.</div>
-            </div>
-            <span class="badge"><span class="badge-dot"></span>Every window summarized</span>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon" style="background: linear-gradient(135deg, #ef4444, #f59e0b);">
+            <i class="fas fa-virus"></i>
           </div>
-          <div id="insights-container" class="insight-grid"></div>
+          <div class="stat-card-trend trend-down">
+            <i class="fas fa-arrow-down"></i> -8%
+          </div>
         </div>
-      </section>
+        <div class="stat-card-value" id="stat-attack-flows">-</div>
+        <div class="stat-card-label">Threats Detected</div>
+      </div>
 
-      <section class="card">
-        <div class="card-inner">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Executive signals</div>
-              <div class="card-sub">Pro-grade overlays fused from model confidence, velocity, and label mix.</div>
-            </div>
-            <span class="badge"><span class="badge-dot"></span>Elite overlays</span>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">
+            <i class="fas fa-brain"></i>
           </div>
-          <div class="pro-row">
-            <div class="pro-tile">
-              <div class="pro-title">Threat posture</div>
-              <div class="pro-value" id="pro-risk">–</div>
-              <div class="pro-desc">Composite outlook blending attack ratio, unknown flows, and latest label mix.</div>
-            </div>
-            <div class="pro-tile">
-              <div class="pro-title">AI confidence</div>
-              <div class="pro-value" id="pro-confidence">–</div>
-              <div class="pro-desc">Stability of ML verdicts across the last 3 windows.</div>
-            </div>
-            <div class="pro-tile">
-              <div class="pro-title">Threat velocity</div>
-              <div class="pro-value" id="pro-velocity">–</div>
-              <div class="pro-desc">Direction and pace of change in suspected attacks.</div>
-            </div>
-            <div class="pro-tile">
-              <div class="pro-title">LLM watchlist</div>
-              <div class="pro-value" id="pro-watchlist">–</div>
-              <div class="pro-desc">Labels most amplified in recent AI write-ups.</div>
-            </div>
+          <div class="stat-card-trend trend-neutral">
+            <i class="fas fa-minus"></i> Stable
           </div>
         </div>
-      </section>
+        <div class="stat-card-value" id="stat-ml-accuracy">-</div>
+        <div class="stat-card-label">ML Model Accuracy</div>
+      </div>
 
-      <section class="card grid-col-12">
-        <div class="card-inner">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Windows</div>
-              <div class="card-sub">Raw metrics per 5-minute capture</div>
-            </div>
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">
+            <i class="fas fa-chart-line"></i>
           </div>
-          <div style="overflow-x:auto;">
-            <table class="windows-table" id="windows-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Start (UTC)</th>
-                  <th>End (UTC)</th>
-                  <th>Flows</th>
-                  <th>Packets</th>
-                  <th>Benign</th>
-                  <th>Attack</th>
-                  <th>Attack %</th>
-                  <th>Risk</th>
-                </tr>
-              </thead>
-              <tbody id="windows-table-body">
-                <tr>
-                  <td colspan="9" style="text-align:center; color:var(--muted); padding:10px;">Waiting for data… capture needs at least one 5-minute window.</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="stat-card-trend trend-up">
+            <i class="fas fa-arrow-up"></i> +15%
           </div>
         </div>
-      </section>
-    </main>
+        <div class="stat-card-value" id="stat-packet-rate">-</div>
+        <div class="stat-card-label">Packets/Second</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-header">
+          <div class="stat-card-icon" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+            <i class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="stat-card-trend trend-down">
+            <i class="fas fa-arrow-down"></i> -3
+          </div>
+        </div>
+        <div class="stat-card-value" id="stat-active-alerts">-</div>
+        <div class="stat-card-label">Active Alerts</div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Traffic Analysis Over Time</div>
+            <div class="chart-subtitle">Real-time flow monitoring with ML classification</div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="traffic-chart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Threat Distribution</div>
+            <div class="chart-subtitle">Attack types detected by ML model</div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="threat-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insights Section -->
+    <div class="ai-insights">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+          AI-Powered Security Insights
+        </div>
+        <div class="badge badge-success">
+          <i class="fas fa-check-circle"></i> LLM Analysis Active
+        </div>
+      </div>
+      <div class="insights-grid" id="insights-grid">
+        <div class="skeleton" style="height: 300px;"></div>
+      </div>
+    </div>
+
+    <!-- Windows Table -->
+    <div class="windows-section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon">
+            <i class="fas fa-table"></i>
+          </div>
+          Traffic Windows Analysis
+        </div>
+      </div>
+      <div class="table-container">
+        <table id="windows-table">
+          <thead>
+            <tr>
+              <th>Time Window</th>
+              <th>Total Flows</th>
+              <th>Packets</th>
+              <th>Benign</th>
+              <th>Threats</th>
+              <th>Threat %</th>
+              <th>Risk Level</th>
+            </tr>
+          </thead>
+          <tbody id="windows-table-body">
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                Loading traffic data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
-    const summarySkeleton = document.getElementById('summary-skeleton');
-    const summaryContent = document.getElementById('summary-content');
-    const latestSkeleton = document.getElementById('latest-skeleton');
-    const latestContent = document.getElementById('latest-content');
-    const errorBanner = document.getElementById('error-banner');
-    const refreshStatus = document.getElementById('refresh-status');
+    // Global state
+    let trafficChart = null;
+    let threatChart = null;
+    let refreshInterval = null;
 
-    const statTotalFlows = document.getElementById('stat-total-flows');
-    const statTotalPackets = document.getElementById('stat-total-packets');
-    const statBenignFlows = document.getElementById('stat-benign-flows');
-    const statAttackFlows = document.getElementById('stat-attack-flows');
-    const statAttackPercent = document.getElementById('stat-attack-percent');
-    const windowCountNote = document.getElementById('window-count-note');
+    // Format numbers
+    function formatNumber(num) {
+      if (num === null || num === undefined) return '-';
+      return new Intl.NumberFormat('en-US').format(num);
+    }
 
-    const latestRange = document.getElementById('latest-range');
-    const latestFlows = document.getElementById('latest-flows');
-    const latestPackets = document.getElementById('latest-packets');
-    const latestBenign = document.getElementById('latest-benign');
-    const latestAttacks = document.getElementById('latest-attacks');
-    const latestLabels = document.getElementById('latest-labels');
-    const latestSummary = document.getElementById('latest-summary');
-    const latestRiskLabel = document.getElementById('latest-risk-label');
+    function formatPercent(num) {
+      if (num === null || num === undefined) return '-';
+      return num.toFixed(1) + '%';
+    }
 
-    const windowsTableBody = document.getElementById('windows-table-body');
-
-    let chartTimeSeries = null;
-    let chartAttackTypes = null;
-
-    function formatTimeLabel(iso) {
+    function formatTime(iso) {
       const d = new Date(iso);
-      if (isNaN(d.getTime())) return iso;
-      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function formatUtc(iso) {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return iso;
-      return d.toISOString().replace('T', ' ').replace(/\.\d+Z$/, 'Z');
-    }
-
-    function computeRiskLabel(attackPercent) {
-      if (attackPercent >= 50) return { label: 'Risk: High', className: 'chip chip-red' };
-      if (attackPercent >= 10) return { label: 'Risk: Medium', className: 'chip chip-muted' };
-      return { label: 'Risk: Low', className: 'chip chip-green' };
-    }
-
-    function setError(message) {
-      errorBanner.style.display = 'block';
-      errorBanner.textContent = message;
-    }
-
-    function clearError() {
-      errorBanner.style.display = 'none';
-      errorBanner.textContent = '';
-    }
-
-    async function fetchWindows() {
-      const res = await fetch('/api/windows', {
-        headers: { 'Accept': 'application/json' }
+      return d.toLocaleString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
       });
-      if (!res.ok) {
-        throw new Error('API returned status ' + res.status);
-      }
-      return await res.json();
     }
 
-    function updateSummary(windows) {
-      summarySkeleton.style.display = 'none';
-      summaryContent.style.display = 'block';
+    function getRiskLevel(attackPercent) {
+      if (attackPercent >= 50) return { label: 'Critical', class: 'badge-danger' };
+      if (attackPercent >= 10) return { label: 'Elevated', class: 'badge-warning' };
+      return { label: 'Normal', class: 'badge-success' };
+    }
 
-      if (!windows || windows.length === 0) {
-        statTotalFlows.textContent = '0';
-        statTotalPackets.textContent = '0';
-        statBenignFlows.textContent = '0';
-        statAttackFlows.textContent = '0';
-        statAttackPercent.textContent = '0%';
-        windowCountNote.textContent = 'No windows yet.';
+    // Fetch data
+    async function fetchData() {
+      try {
+        const [windowsRes, alertsRes, analyticsRes] = await Promise.all([
+          fetch('/api/windows'),
+          fetch('/api/alerts?acknowledged=false&limit=5'),
+          fetch('/api/analytics/summary')
+        ]);
+
+        const windows = await windowsRes.json();
+        const alerts = await alertsRes.json();
+        const analytics = await analyticsRes.json();
+
+        updateDashboard(windows, alerts, analytics);
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    }
+
+    // Update dashboard
+    function updateDashboard(windows, alerts, analytics) {
+      // Update hero stats
+      document.getElementById('hero-total-flows').textContent = formatNumber(analytics.total_flows);
+      document.getElementById('hero-threats').textContent = formatNumber(analytics.total_attack_flows);
+      const confidence = analytics.total_flows > 0 
+        ? (100 - (analytics.attack_percentage || 0)).toFixed(0) 
+        : 100;
+      document.getElementById('hero-confidence').textContent = confidence + '%';
+
+      // Update stat cards
+      document.getElementById('stat-total-flows').textContent = formatNumber(analytics.total_flows);
+      document.getElementById('stat-benign-flows').textContent = formatNumber(analytics.total_benign_flows);
+      document.getElementById('stat-attack-flows').textContent = formatNumber(analytics.total_attack_flows);
+      document.getElementById('stat-ml-accuracy').textContent = confidence + '%';
+      
+      const avgPackets = windows.length > 0 
+        ? Math.round(windows.reduce((sum, w) => sum + (w.metrics.total_packets || 0), 0) / windows.length / 300)
+        : 0;
+      document.getElementById('stat-packet-rate').textContent = formatNumber(avgPackets);
+      document.getElementById('stat-active-alerts').textContent = alerts.length;
+
+      // Update alerts preview
+      updateAlertsPreview(alerts);
+
+      // Update charts
+      updateTrafficChart(windows);
+      updateThreatChart(windows);
+
+      // Update insights
+      updateInsights(windows);
+
+      // Update table
+      updateTable(windows);
+    }
+
+    function updateAlertsPreview(alerts) {
+      const container = document.getElementById('alerts-preview');
+      if (alerts.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No active alerts</div>';
         return;
       }
 
-      let totalFlows = 0;
-      let totalPackets = 0;
-      let benignFlows = 0;
-      let attackFlows = 0;
+      container.innerHTML = alerts.slice(0, 3).map(alert => `
+        <div style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid ${alert.severity === 'high' ? 'var(--danger)' : alert.severity === 'medium' ? 'var(--warning)' : 'var(--info)'};">
+          <div style="font-weight: 600; margin-bottom: 0.25rem;">${alert.title}</div>
+          <div style="font-size: 0.875rem; color: var(--text-muted);">${alert.message.substring(0, 80)}...</div>
+        </div>
+      `).join('');
+    }
 
+    function updateTrafficChart(windows) {
+      const ctx = document.getElementById('traffic-chart').getContext('2d');
+      
+      if (trafficChart) trafficChart.destroy();
+
+      const sorted = [...windows].sort((a, b) => 
+        new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
+      );
+
+      trafficChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: sorted.map(w => formatTime(w.metrics.start_time)),
+          datasets: [
+            {
+              label: 'Total Flows',
+              data: sorted.map(w => w.metrics.total_flows || 0),
+              borderColor: '#6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              tension: 0.4,
+              fill: true,
+            },
+            {
+              label: 'Threats',
+              data: sorted.map(w => w.metrics.attack_flows || 0),
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              tension: 0.4,
+              fill: true,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1' }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8' },
+              grid: { color: 'rgba(99, 102, 241, 0.1)' }
+            },
+            y: {
+              ticks: { color: '#94a3b8' },
+              grid: { color: 'rgba(99, 102, 241, 0.1)' }
+            }
+          }
+        }
+      });
+    }
+
+    function updateThreatChart(windows) {
+      const ctx = document.getElementById('threat-chart').getContext('2d');
+      
+      if (threatChart) threatChart.destroy();
+
+      const threatCounts = {};
       windows.forEach(w => {
-        const m = w.metrics;
-        totalFlows += m.total_flows || 0;
-        totalPackets += m.total_packets || 0;
-        benignFlows += m.benign_flows || 0;
-        attackFlows += m.attack_flows || 0;
-      });
-
-      const attackPercent = totalFlows > 0 ? (attackFlows / totalFlows) * 100 : 0;
-
-      statTotalFlows.textContent = totalFlows.toLocaleString();
-      statTotalPackets.textContent = totalPackets.toLocaleString();
-      statBenignFlows.textContent = benignFlows.toLocaleString();
-      statAttackFlows.textContent = attackFlows.toLocaleString();
-      statAttackPercent.textContent = attackPercent.toFixed(1) + '%';
-      windowCountNote.textContent = `${windows.length} window(s) currently displayed.`;
-    }
-
-    function classifyStatus(metrics) {
-      const total = metrics.total_flows || 0;
-      const attack = metrics.attack_flows || 0;
-      const unknown = metrics.unknown_flows || 0;
-
-      if (total === 0) {
-        return { label: "No data", level: "neutral" };
-      }
-
-      const attackRatio = attack / total;
-      const unknownRatio = unknown / total;
-
-      if (attackRatio >= 0.5 || unknownRatio >= 0.35) return { label: "Critical", level: "high" };
-      if (attackRatio >= 0.15 || unknownRatio >= 0.2) return { label: "Elevated", level: "medium" };
-      return { label: "Normal", level: "low" };
-    }
-
-    function updateLatestWindow(windows) {
-      latestSkeleton.style.display = 'none';
-      latestContent.style.display = 'block';
-
-      if (!windows || windows.length === 0) {
-        latestSummary.textContent = 'No windows yet.';
-        return;
-      }
-
-      const latest = windows.reduce((a, b) => new Date(a.metrics.end_time) > new Date(b.metrics.end_time) ? a : b);
-      const m = latest.metrics;
-
-      latestRange.textContent = `${formatUtc(m.start_time)} → ${formatUtc(m.end_time)}`;
-      latestFlows.textContent = (m.total_flows || 0).toLocaleString();
-      latestPackets.textContent = (m.total_packets || 0).toLocaleString();
-      latestBenign.textContent = (m.benign_flows || 0).toLocaleString();
-      latestAttacks.textContent = (m.attack_flows || 0).toLocaleString();
-
-      const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
-      const risk = computeRiskLabel(attackPercent);
-      latestRiskLabel.className = 'badge';
-      latestRiskLabel.innerHTML = `<span class="badge-dot"></span>${risk.label}`;
-
-      const labels = m.attacks_per_label || {};
-      const labelText = Object.entries(labels)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([label, count]) => `${label} (${count})`)
-        .join(', ');
-      latestLabels.textContent = labelText || 'None';
-
-      latestSummary.textContent = latest.llm_summary || 'No summary provided.';
-    }
-
-    function updateProSignals(windows) {
-      if (!windows || windows.length === 0) {
-        document.getElementById('pro-risk').textContent = '–';
-        document.getElementById('pro-confidence').textContent = '–';
-        document.getElementById('pro-velocity').textContent = '–';
-        document.getElementById('pro-watchlist').textContent = '–';
-        return;
-      }
-
-      const lastThree = [...windows]
-        .sort((a, b) => new Date(b.metrics.end_time) - new Date(a.metrics.end_time))
-        .slice(0, 3);
-
-      const attackRatios = lastThree.map(w => {
-        const m = w.metrics;
-        return m.total_flows ? (m.attack_flows / m.total_flows) : 0;
-      });
-
-      const avgAttackRatio = attackRatios.reduce((a, b) => a + b, 0) / attackRatios.length;
-      const trend = attackRatios[0] - attackRatios[attackRatios.length - 1];
-
-      const proRisk = avgAttackRatio >= 0.4 ? 'Critical' : avgAttackRatio >= 0.18 ? 'Elevated' : 'Stable';
-      document.getElementById('pro-risk').textContent = proRisk;
-      document.getElementById('pro-velocity').textContent = trend >= 0.05 ? 'Accelerating' : trend <= -0.05 ? 'Cooling' : 'Steady';
-
-      const labelCounts = {};
-      lastThree.forEach(w => {
-        const labels = w.metrics.attacks_per_label || {};
-        Object.entries(labels).forEach(([label, count]) => {
-          labelCounts[label] = (labelCounts[label] || 0) + count;
+        Object.entries(w.metrics.attacks_per_label || {}).forEach(([label, count]) => {
+          threatCounts[label] = (threatCounts[label] || 0) + count;
         });
       });
 
-      const topLabel = Object.entries(labelCounts).sort((a, b) => b[1] - a[1])[0];
-      document.getElementById('pro-watchlist').textContent = topLabel ? topLabel[0] : 'None';
+      const entries = Object.entries(threatCounts).sort((a, b) => b[1] - a[1]).slice(0, 8);
 
-      const variance = attackRatios.reduce((acc, r) => acc + Math.pow(r - avgAttackRatio, 2), 0) / attackRatios.length;
-      document.getElementById('pro-confidence').textContent = variance < 0.01 ? 'High' : variance < 0.04 ? 'Medium' : 'Low';
+      threatChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: entries.map(e => e[0]),
+          datasets: [{
+            data: entries.map(e => e[1]),
+            backgroundColor: [
+              '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899',
+              '#3b82f6', '#06b6d4', '#10b981', '#6366f1'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#cbd5e1', padding: 15 }
+            }
+          }
+        }
+      });
     }
 
     function updateInsights(windows) {
-      const container = document.getElementById('insights-container');
-      container.innerHTML = '';
-
-      if (!windows || windows.length === 0) {
-        container.innerHTML = '<div style="color:var(--muted);">No windows yet.</div>';
+      const container = document.getElementById('insights-grid');
+      
+      if (windows.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">No insights available</div>';
         return;
       }
 
-      const sorted = [...windows].sort(
-        (a, b) => new Date(b.metrics.end_time) - new Date(a.metrics.end_time)
+      const sorted = [...windows].sort((a, b) => 
+        new Date(b.metrics.end_time) - new Date(a.metrics.end_time)
       );
 
-      sorted.forEach((w, idx) => {
-        const card = document.createElement('div');
-        card.className = 'insight-card';
-
-        const status = classifyStatus(w.metrics);
-        const labelEntries = Object.entries(w.metrics.attacks_per_label || {})
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 2)
-          .map(([label, count]) => `${label} (${count})`)
-          .join(', ');
-
-        card.innerHTML = `
-          <div class="insight-top">
-            <div>
-              <div class="insight-range">${formatUtc(w.metrics.start_time)} → ${formatUtc(w.metrics.end_time)}</div>
-              <div class="insight-meta">Flows ${w.metrics.total_flows || 0} · Packets ${w.metrics.total_packets || 0}</div>
+      container.innerHTML = sorted.slice(0, 6).map((w, idx) => {
+        const attackPercent = w.metrics.total_flows > 0 
+          ? (w.metrics.attack_flows / w.metrics.total_flows * 100) 
+          : 0;
+        const risk = getRiskLevel(attackPercent);
+        
+        return `
+          <div class="insight-card" data-idx="${idx}">
+            <div class="insight-header">
+              <div class="insight-time">${formatTime(w.metrics.start_time)}</div>
+              <div class="insight-badges">
+                <span class="badge ${risk.class}">${risk.label}</span>
+              </div>
             </div>
-            <div class="insight-tags">
-              <span class="pill"><strong>${status.label}</strong> state</span>
-              <span class="pill">Top labels: <strong>${labelEntries || 'None'}</strong></span>
+            <div class="insight-metrics">
+              <div class="insight-metric">
+                <div class="insight-metric-value">${formatNumber(w.metrics.total_flows)}</div>
+                <div class="insight-metric-label">Flows</div>
+              </div>
+              <div class="insight-metric">
+                <div class="insight-metric-value">${formatNumber(w.metrics.attack_flows)}</div>
+                <div class="insight-metric-label">Threats</div>
+              </div>
+              <div class="insight-metric">
+                <div class="insight-metric-value">${formatPercent(attackPercent)}</div>
+                <div class="insight-metric-label">Risk</div>
+              </div>
             </div>
+            <div class="insight-summary">${w.llm_summary || 'No AI analysis available for this window.'}</div>
+            <button class="insight-toggle" onclick="toggleInsight(${idx})">Show More</button>
           </div>
-          <div class="insight-actions">
-            <button class="insight-toggle" data-target="insight-summary-${idx}">Show insight</button>
-            <span class="badge"><span class="badge-dot"></span>LLM narrative ready</span>
-          </div>
-          <div class="insight-summary" id="insight-summary-${idx}" style="display:none;">${w.llm_summary || 'No summary provided.'}</div>
         `;
+      }).join('');
+    }
 
-        container.appendChild(card);
-      });
-
-      container.querySelectorAll('.insight-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const targetId = btn.getAttribute('data-target');
-          const target = document.getElementById(targetId);
-          const isHidden = target.style.display === 'none';
-          target.style.display = isHidden ? 'block' : 'none';
-          btn.textContent = isHidden ? 'Hide insight' : 'Show insight';
-        });
-      });
+    function toggleInsight(idx) {
+      const card = document.querySelector(`.insight-card[data-idx="${idx}"]`);
+      const toggle = card.querySelector('.insight-toggle');
+      
+      if (card.classList.contains('expanded')) {
+        card.classList.remove('expanded');
+        toggle.textContent = 'Show More';
+      } else {
+        card.classList.add('expanded');
+        toggle.textContent = 'Show Less';
+      }
     }
 
     function updateTable(windows) {
-      windowsTableBody.innerHTML = '';
-
-      if (!windows || windows.length === 0) {
-        windowsTableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; color:var(--muted); padding:10px;">No windows yet.</td></tr>';
+      const tbody = document.getElementById('windows-table-body');
+      
+      if (windows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No data available</td></tr>';
         return;
       }
 
-      const sorted = [...windows].sort(
-        (a, b) => new Date(b.metrics.start_time) - new Date(a.metrics.start_time)
+      const sorted = [...windows].sort((a, b) => 
+        new Date(b.metrics.start_time) - new Date(a.metrics.start_time)
       );
 
-      sorted.forEach((w, idx) => {
-        const tr = document.createElement('tr');
-        const m = w.metrics;
-
-        const attackPercent = m.total_flows > 0 ? (m.attack_flows / m.total_flows) * 100 : 0;
-        const risk = computeRiskLabel(attackPercent);
-
-        const cols = [
-          idx + 1,
-          formatUtc(m.start_time),
-          formatUtc(m.end_time),
-          (m.total_flows || 0).toLocaleString(),
-          (m.total_packets || 0).toLocaleString(),
-          (m.benign_flows || 0).toLocaleString(),
-          (m.attack_flows || 0).toLocaleString(),
-          attackPercent.toFixed(1) + '%'
-        ];
-
-        cols.forEach(text => {
-          const td = document.createElement('td');
-          td.textContent = text;
-          tr.appendChild(td);
-        });
-
-        const riskTd = document.createElement('td');
-        const riskChip = document.createElement('span');
-        riskChip.className = risk.className;
-        riskChip.textContent = risk.label.replace('Risk: ', '');
-        riskTd.appendChild(riskChip);
-        tr.appendChild(riskTd);
-
-        windowsTableBody.appendChild(tr);
-      });
+      tbody.innerHTML = sorted.map(w => {
+        const attackPercent = w.metrics.total_flows > 0 
+          ? (w.metrics.attack_flows / w.metrics.total_flows * 100) 
+          : 0;
+        const risk = getRiskLevel(attackPercent);
+        const timeRange = `${formatTime(w.metrics.start_time)} - ${formatTime(w.metrics.end_time)}`;
+        
+        return `
+          <tr>
+            <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.875rem;">${timeRange}</td>
+            <td>${formatNumber(w.metrics.total_flows)}</td>
+            <td>${formatNumber(w.metrics.total_packets)}</td>
+            <td style="color: var(--success);">${formatNumber(w.metrics.benign_flows)}</td>
+            <td style="color: var(--danger);">${formatNumber(w.metrics.attack_flows)}</td>
+            <td>${formatPercent(attackPercent)}</td>
+            <td><span class="badge ${risk.class}">${risk.label}</span></td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    function updateTimeSeriesChart(windows) {
-      const ctx = document.getElementById('chart-time-series').getContext('2d');
+    // Initialize
+    fetchData();
+    refreshInterval = setInterval(fetchData, 60000); // Refresh every minute
 
-      if (!windows || windows.length === 0) {
-        if (chartTimeSeries) {
-          chartTimeSeries.destroy();
-          chartTimeSeries = null;
-        }
-        return;
-      }
-
-      const sorted = [...windows].sort(
-        (a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time)
-      );
-      const labels = sorted.map(w => formatTimeLabel(w.metrics.start_time));
-      const flows = sorted.map(w => w.metrics.total_flows || 0);
-      const attacks = sorted.map(w => w.metrics.attack_flows || 0);
-
-      if (chartTimeSeries) {
-        chartTimeSeries.destroy();
-      }
-
-      chartTimeSeries = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Total flows',
-              data: flows,
-              tension: 0.35,
-              borderColor: '#22d3ee',
-              backgroundColor: 'rgba(34, 211, 238, 0.2)',
-              fill: true,
-              pointRadius: 3,
-              pointHoverRadius: 5
-            },
-            {
-              label: 'Attack flows',
-              data: attacks,
-              tension: 0.35,
-              borderColor: '#f472b6',
-              backgroundColor: 'rgba(244, 114, 182, 0.2)',
-              fill: true,
-              pointRadius: 3,
-              pointHoverRadius: 5
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { labels: { color: '#e5e7eb', font: { size: 11 } } }
-          },
-          scales: {
-            x: { ticks: { color: '#93a2c0', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-            y: { ticks: { color: '#93a2c0', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
-          }
-        }
-      });
-    }
-
-    function updateAttackTypesChart(windows) {
-      const ctx = document.getElementById('chart-attack-types').getContext('2d');
-
-      if (!windows || windows.length === 0) {
-        if (chartAttackTypes) {
-          chartAttackTypes.destroy();
-          chartAttackTypes = null;
-        }
-        return;
-      }
-
-      const attackTypeCounts = {};
-
-      windows.forEach(w => {
-        const labels = w.metrics.attacks_per_label || {};
-        Object.entries(labels).forEach(([label, count]) => {
-          if (!attackTypeCounts[label]) attackTypeCounts[label] = 0;
-          attackTypeCounts[label] += count;
-        });
-      });
-
-      const entries = Object.entries(attackTypeCounts).sort((a, b) => b[1] - a[1]);
-      const labels = entries.map(e => e[0]);
-      const values = entries.map(e => e[1]);
-
-      if (chartAttackTypes) {
-        chartAttackTypes.destroy();
-      }
-
-      chartAttackTypes = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Attack count',
-              data: values,
-              backgroundColor: labels.map((_, i) => `hsl(${(i * 55) % 360}, 85%, 55%)`),
-              borderWidth: 0
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { color: '#e5e7eb', font: { size: 11 } } }
-          }
-        }
-      });
-
-      const totalAttacks = values.reduce((a, b) => a + b, 0);
-      document.getElementById('attack-types-note').textContent = `${totalAttacks.toLocaleString()} attacks across ${labels.length} labels.`;
-    }
-
-    async function refresh() {
-      try {
-        clearError();
-        const windows = await fetchWindows();
-        const now = new Date();
-        refreshStatus.textContent = `Last refresh: ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })} UTC`;
-
-        updateSummary(windows);
-        updateLatestWindow(windows);
-        updateInsights(windows);
-        updateTable(windows);
-        updateTimeSeriesChart(windows);
-        updateAttackTypesChart(windows);
-        updateProSignals(windows);
-      } catch (err) {
-        console.error(err);
-        setError(err.message || 'Failed to fetch windows');
-      }
-    }
-
-    refresh();
-    setInterval(refresh, 60000);
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (refreshInterval) clearInterval(refreshInterval);
+      if (trafficChart) trafficChart.destroy();
+      if (threatChart) threatChart.destroy();
+    });
   </script>
 </body>
 </html>

@@ -623,3 +623,43 @@ def get_current_user_info(
 ):
     """Get current user information."""
     return current_user
+
+
+@app.get("/api/system/status")
+def get_system_status(db: Session = Depends(get_db)):
+    """Get comprehensive system status (public endpoint)."""
+    from app.config import get_admin_config
+    from app.alerts import get_unacknowledged_alerts_count, get_critical_alerts_count
+    
+    admin_config = get_admin_config()
+    
+    # Get recent windows count
+    recent_windows = db.query(WindowModel).filter(
+        WindowModel.created_at >= datetime.now(timezone.utc) - timedelta(hours=1)
+    ).count()
+    
+    # Get alert counts
+    unacknowledged = get_unacknowledged_alerts_count(db)
+    critical = get_critical_alerts_count(db)
+    
+    # Check ML model status
+    from app.ml_model import model_is_ready
+    ml_ready = model_is_ready()
+    
+    return {
+        "status": "operational",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "components": {
+            "api": "operational",
+            "worker": "operational",  # Could be enhanced with actual worker health check
+            "database": "operational",
+            "ml_model": "ready" if ml_ready else "not_configured",
+            "llm": "ready" if admin_config.llm.get("enabled", True) else "disabled",
+        },
+        "metrics": {
+            "recent_windows": recent_windows,
+            "unacknowledged_alerts": unacknowledged,
+            "critical_alerts": critical,
+        },
+        "version": "2.0.0",
+    }
