@@ -56,8 +56,9 @@ DEFAULT_ADMIN_CONFIG = {
         "enabled": True,
     },
     "llm": {
-        "ollama_url": "http://127.0.0.1:11434/api/generate",
-        "ollama_model": "smollm2:135m",
+        "provider": "ollama",
+        "model": "smollm2:135m",
+        "provider_url": "http://127.0.0.1:11434/api/generate",
         "enabled": True,
         "timeout_seconds": 60,
     },

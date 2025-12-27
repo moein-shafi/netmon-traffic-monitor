@@ -38,3 +38,6 @@ reportlab==4.0.7
 # Logging
 structlog==23.2.0
 
+# Encryption for API keys
+cryptography==41.0.7
+

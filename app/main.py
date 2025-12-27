@@ -113,6 +113,33 @@ async def admin_panel():
     return "<h1>NetMon Admin Panel</h1><p>Admin panel not found</p>"
 
 
+@app.get("/analytics", response_class=HTMLResponse)
+async def analytics_page():
+    """Serve the analytics page."""
+    analytics_path = Path("templates/analytics.html")
+    if analytics_path.exists():
+        return analytics_path.read_text()
+    return "<h1>Analytics</h1><p>Analytics page not found</p>"
+
+
+@app.get("/threat-intelligence", response_class=HTMLResponse)
+async def threat_intelligence_page():
+    """Serve the threat intelligence page."""
+    threat_path = Path("templates/threat-intelligence.html")
+    if threat_path.exists():
+        return threat_path.read_text()
+    return "<h1>Threat Intelligence</h1><p>Threat intelligence page not found</p>"
+
+
+@app.get("/model-performance", response_class=HTMLResponse)
+async def model_performance_page():
+    """Serve the model performance page."""
+    model_path = Path("templates/model-performance.html")
+    if model_path.exists():
+        return model_path.read_text()
+    return "<h1>Model Performance</h1><p>Model performance page not found</p>"
+
+
 @app.get("/api/health")
 def health():
     """Health check endpoint."""
@@ -724,3 +751,107 @@ def get_admin_worker_status(current_user: Dict = Depends(require_admin)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get worker status: {str(e)}")
+
+
+@app.get("/api/llm/providers")
+def list_llm_providers(current_user: Dict = Depends(get_current_user)):
+    """List all available LLM providers (authenticated)."""
+    try:
+        from app.llm_providers import list_providers
+        return list_providers()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list providers: {str(e)}")
+
+
+@app.post("/api/admin/llm/providers/{provider}/key")
+def save_llm_api_key(
+    provider: str,
+    request_data: Dict[str, str],
+    current_user: Dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Save API key for a provider (admin only)."""
+    try:
+        from app.llm_providers import save_api_key, ALL_PROVIDERS
+        
+        if provider not in ALL_PROVIDERS:
+            raise HTTPException(status_code=400, detail=f"Unknown provider: {provider}")
+        
+        api_key = request_data.get("api_key")
+        if not api_key:
+            raise HTTPException(status_code=400, detail="API key is required")
+        
+        save_api_key(provider, api_key)
+        
+        # Log the action
+        from app.database import AuditLogModel
+        audit_log = AuditLogModel(
+            username=current_user["username"],
+            action="llm_api_key_saved",
+            resource=provider,
+            details={"provider": provider},
+        )
+        db.add(audit_log)
+        db.commit()
+        
+        return {"status": "saved", "provider": provider}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save API key: {str(e)}")
+
+
+@app.delete("/api/admin/llm/providers/{provider}/key")
+def delete_llm_api_key(
+    provider: str,
+    current_user: Dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """Delete API key for a provider (admin only)."""
+    try:
+        from app.llm_providers import delete_api_key
+        
+        delete_api_key(provider)
+        
+        # Log the action
+        from app.database import AuditLogModel
+        audit_log = AuditLogModel(
+            username=current_user["username"],
+            action="llm_api_key_deleted",
+            resource=provider,
+        )
+        db.add(audit_log)
+        db.commit()
+        
+        return {"status": "deleted", "provider": provider}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete API key: {str(e)}")
+
+
+@app.post("/api/admin/llm/test")
+def test_llm_provider(
+    request_data: Dict[str, Any],
+    current_user: Dict = Depends(require_admin),
+):
+    """Test an LLM provider (admin only)."""
+    try:
+        from app.llm_providers import generate_with_llm, ALL_PROVIDERS
+        
+        provider = request_data.get("provider")
+        model = request_data.get("model")
+        prompt = request_data.get("prompt", "Hello, this is a test. Please respond briefly.")
+        
+        if not provider or provider not in ALL_PROVIDERS:
+            raise HTTPException(status_code=400, detail="Invalid provider")
+        
+        if not model:
+            raise HTTPException(status_code=400, detail="Model is required")
+        
+        result = generate_with_llm(provider, model, prompt, timeout=30)
+        
+        if result:
+            return {"status": "success", "response": result}
+        else:
+            return {"status": "error", "message": "No response from provider"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Test failed: {str(e)}")

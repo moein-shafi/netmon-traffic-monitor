@@ -513,51 +513,53 @@ def build_rule_based_summary(window_id: str, metrics: WindowMetrics) -> str:
 
 
 def generate_llm_summary(window_id: str, metrics: WindowMetrics) -> str:
-    """Generate LLM summary if enabled, otherwise use rule-based."""
-    if not OLLAMA_ENABLED:
+    """Generate LLM summary using configured provider, otherwise use rule-based."""
+    from app.llm_providers import generate_with_llm, list_providers
+    
+    llm_config = admin_config.llm
+    if not llm_config.get("enabled", True):
         return build_rule_based_summary(window_id, metrics)
+    
+    # Get configured provider
+    provider = llm_config.get("provider", "ollama")
+    model = llm_config.get("model", "smollm2:135m")
+    timeout = llm_config.get("timeout_seconds", 60)
+    provider_url = llm_config.get("provider_url")
     
     base_summary = build_rule_based_summary(window_id, metrics)
     
-    payload = {
-        "model": OLLAMA_MODEL,
-        "prompt": (
-            "You are a senior network security engineer writing notes for an internal monitoring dashboard.\n"
-            "Below is a draft summary describing one 5-minute window of network traffic:\n\n"
-            f"{base_summary}\n\n"
-            "Rewrite this as 3–5 concise bullet points in a professional tone.\n"
-            "IMPORTANT FORMAT RULES:\n"
-            "- Output ONLY bullet points, nothing else.\n"
-            "- Each bullet point MUST start with '- ' (dash + space).\n"
-            "- Do NOT add titles, headings, section labels, or explanations.\n"
-            "- Do NOT mention 'draft', 'rewrite', 'bullet points', or anything about the process.\n"
-            "- Do NOT wrap the answer in quotes, backticks, or code fences.\n"
-            "Just return the final bullet points."
-        ),
-        "stream": False,
-    }
+    prompt = (
+        "You are a senior network security engineer writing notes for an internal monitoring dashboard.\n"
+        "Below is a draft summary describing one 5-minute window of network traffic:\n\n"
+        f"{base_summary}\n\n"
+        "Rewrite this as 3–5 concise bullet points in a professional tone.\n"
+        "IMPORTANT FORMAT RULES:\n"
+        "- Output ONLY bullet points, nothing else.\n"
+        "- Each bullet point MUST start with '- ' (dash + space).\n"
+        "- Do NOT add titles, headings, section labels, or explanations.\n"
+        "- Do NOT mention 'draft', 'rewrite', 'bullet points', or anything about the process.\n"
+        "- Do NOT wrap the answer in quotes, backticks, or code fences.\n"
+        "Just return the final bullet points."
+    )
     
     try:
-        resp = requests.post(OLLAMA_URL, json=payload, timeout=OLLAMA_TIMEOUT)
-        resp.raise_for_status()
-        data = resp.json()
-        raw = (data.get("response") or "").strip()
+        kwargs = {}
+        if provider_url:
+            kwargs["url"] = provider_url
         
-        if not raw:
+        result = generate_with_llm(provider, model, prompt, timeout=timeout, **kwargs)
+        
+        if not result:
             logger.warning(f"LLM returned empty text for {window_id}, using rule-based summary")
             update_metrics("llm_failed")
             return base_summary
         
-        logger.info(f"LLM summary generated for {window_id}")
+        logger.info(f"LLM summary generated for {window_id} using {provider}/{model}")
         update_metrics("llm_success")
-        return raw
+        return result
     
-    except requests.exceptions.Timeout:
-        logger.warning(f"LLM timeout for {window_id}, using rule-based summary")
-        update_metrics("llm_failed")
-        return base_summary
     except Exception as e:
-        logger.warning(f"LLM error for {window_id}: {e}, using rule-based summary")
+        logger.warning(f"LLM error for {window_id} ({provider}/{model}): {e}, using rule-based summary")
         update_metrics("llm_failed")
         return base_summary
 

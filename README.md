@@ -7,9 +7,10 @@ A comprehensive, production-ready network traffic monitoring system with ML-base
 ### Core Capabilities
 - **Real-time Traffic Monitoring**: Captures and analyzes network traffic in 5-minute windows
 - **ML-Based Threat Detection**: Uses scikit-learn models to classify flows as benign, attack, or unknown
-- **LLM-Powered Analysis**: Generates intelligent summaries using local LLM (Ollama)
+- **Multi-LLM Support**: Supports 9+ LLM providers (OpenAI, Anthropic, Google, Ollama, and more) with secure API key management
 - **Professional Dashboard**: Beautiful, responsive UI with real-time visualizations
 - **Comprehensive Analytics**: Detailed metrics, charts, and insights
+- **Multiple Showcase Pages**: Analytics, Threat Intelligence, ML Performance pages
 
 ### Enterprise Features
 - **Authentication & Authorization**: JWT-based auth with admin/user roles
@@ -176,6 +177,9 @@ sudo systemctl start netmon-worker
 ### Accessing the Dashboard
 
 - **Main Dashboard**: http://localhost:8000/
+- **Advanced Analytics**: http://localhost:8000/analytics
+- **Threat Intelligence**: http://localhost:8000/threat-intelligence
+- **ML Model Performance**: http://localhost:8000/model-performance
 - **Admin Panel**: http://localhost:8000/admin
 
 ### Monitoring Traffic
@@ -233,6 +237,8 @@ sudo systemctl start netmon-worker
 
 ### Admin Panel
 - Configuration management (public & admin)
+- **LLM Provider Management**: Configure and test multiple LLM providers with secure API key storage
+- Worker status and configuration
 - User management
 - Alert management
 - Audit log viewer
