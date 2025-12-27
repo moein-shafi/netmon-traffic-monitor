@@ -48,6 +48,7 @@ DEFAULT_ADMIN_CONFIG = {
         "window_duration_minutes": 5,
         "max_windows_keep": 12,
         "worker_interval_seconds": 60,
+        "pcap_min_age_seconds": 10,
     },
     "ml": {
         "model_path": "/opt/netmon/model/netmon_rf.joblib",
@@ -66,6 +67,10 @@ DEFAULT_ADMIN_CONFIG = {
         "min_flows": 1,
         "min_rows": 1,
         "max_rows": 800000,
+        "max_retries": 3,
+        "retry_delay_seconds": 5,
+        "parallel_processing": False,
+        "batch_size": 10,
     },
     "security": {
         "session_timeout_minutes": 60,

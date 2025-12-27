@@ -646,12 +646,20 @@ def get_system_status(db: Session = Depends(get_db)):
     from app.ml_model import model_is_ready
     ml_ready = model_is_ready()
     
+    # Get worker health
+    try:
+        from app.worker import get_worker_health
+        worker_health = get_worker_health()
+        worker_status = worker_health.get("status", "unknown")
+    except Exception:
+        worker_status = "unknown"
+    
     return {
         "status": "operational",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "components": {
             "api": "operational",
-            "worker": "operational",  # Could be enhanced with actual worker health check
+            "worker": worker_status,
             "database": "operational",
             "ml_model": "ready" if ml_ready else "not_configured",
             "llm": "ready" if admin_config.llm.get("enabled", True) else "disabled",
@@ -663,3 +671,56 @@ def get_system_status(db: Session = Depends(get_db)):
         },
         "version": "2.0.0",
     }
+
+
+@app.get("/api/worker/health")
+def get_worker_health_endpoint():
+    """Get worker health status (public endpoint)."""
+    try:
+        from app.worker import get_worker_health
+        return get_worker_health()
+    except Exception as e:
+        return {
+            "status": "unknown",
+            "error": str(e),
+            "running": False,
+        }
+
+
+@app.get("/api/worker/metrics")
+def get_worker_metrics_endpoint(current_user: Dict = Depends(get_current_user)):
+    """Get worker performance metrics (authenticated endpoint)."""
+    try:
+        from app.worker import get_worker_metrics
+        metrics = get_worker_metrics()
+        return metrics.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get worker metrics: {str(e)}")
+
+
+@app.get("/api/admin/worker/status")
+def get_admin_worker_status(current_user: Dict = Depends(require_admin)):
+    """Get detailed worker status for admin (admin only)."""
+    try:
+        from app.worker import get_worker_health, get_worker_metrics
+        from app.config import get_admin_config
+        
+        health = get_worker_health()
+        metrics = get_worker_metrics()
+        config = get_admin_config()
+        
+        return {
+            "health": health,
+            "metrics": metrics.to_dict(),
+            "configuration": {
+                "worker_interval_seconds": config.capture.get("worker_interval_seconds", 60),
+                "max_windows_keep": config.capture.get("max_windows_keep", 12),
+                "window_duration_minutes": config.capture.get("window_duration_minutes", 5),
+                "ml_enabled": config.ml.get("enabled", True),
+                "llm_enabled": config.llm.get("enabled", True),
+                "parallel_processing": config.ntlflowlyzer.get("parallel_processing", False),
+                "max_retries": config.ntlflowlyzer.get("max_retries", 3),
+            },
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get worker status: {str(e)}")

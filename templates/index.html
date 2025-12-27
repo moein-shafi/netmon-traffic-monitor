@@ -976,6 +976,27 @@
       </div>
     </div>
 
+    <!-- Worker Status Section -->
+    <div class="ai-insights" style="margin-bottom: 2rem;">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon">
+            <i class="fas fa-server"></i>
+          </div>
+          Worker Performance & Status
+        </div>
+        <div class="badge badge-success" id="worker-status-badge">
+          <i class="fas fa-circle"></i> Checking...
+        </div>
+      </div>
+      <div class="stats-grid" id="worker-stats-grid">
+        <div class="stat-card skeleton" style="height: 120px;"></div>
+        <div class="stat-card skeleton" style="height: 120px;"></div>
+        <div class="stat-card skeleton" style="height: 120px;"></div>
+        <div class="stat-card skeleton" style="height: 120px;"></div>
+      </div>
+    </div>
+
     <!-- Windows Table -->
     <div class="windows-section">
       <div class="section-header">
@@ -1047,20 +1068,94 @@
     // Fetch data
     async function fetchData() {
       try {
-        const [windowsRes, alertsRes, analyticsRes] = await Promise.all([
+        const [windowsRes, alertsRes, analyticsRes, workerHealthRes] = await Promise.all([
           fetch('/api/windows'),
           fetch('/api/alerts?acknowledged=false&limit=5'),
-          fetch('/api/analytics/summary')
+          fetch('/api/analytics/summary'),
+          fetch('/api/worker/health').catch(() => null)
         ]);
 
         const windows = await windowsRes.json();
         const alerts = await alertsRes.json();
         const analytics = await analyticsRes.json();
+        const workerHealth = workerHealthRes ? await workerHealthRes.json() : null;
 
         updateDashboard(windows, alerts, analytics);
+        if (workerHealth) updateWorkerStatus(workerHealth);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }
+    }
+
+    function updateWorkerStatus(health) {
+      const statusBadge = document.getElementById('worker-status-badge');
+      const grid = document.getElementById('worker-stats-grid');
+      
+      if (!health || !health.metrics) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted);">Worker status unavailable</div>';
+        return;
+      }
+      
+      const metrics = health.metrics;
+      const status = health.status || 'unknown';
+      const statusClass = status === 'healthy' ? 'badge-success' : status === 'degraded' ? 'badge-warning' : 'badge-danger';
+      
+      statusBadge.className = `badge ${statusClass}`;
+      statusBadge.innerHTML = `<i class="fas fa-circle"></i> ${status.toUpperCase()}`;
+      
+      const uptimeHours = Math.floor(health.uptime_seconds / 3600);
+      const uptimeMinutes = Math.floor((health.uptime_seconds % 3600) / 60);
+      
+      grid.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon" style="background: linear-gradient(135deg, #10b981, #06b6d4);">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-card-trend trend-neutral">
+              <i class="fas fa-check"></i> Active
+            </div>
+          </div>
+          <div class="stat-card-value">${uptimeHours}h ${uptimeMinutes}m</div>
+          <div class="stat-card-label">Worker Uptime</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon">
+              <i class="fas fa-window-maximize"></i>
+            </div>
+            <div class="stat-card-trend trend-up">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+          </div>
+          <div class="stat-card-value">${formatNumber(metrics.total_processed_windows || 0)}</div>
+          <div class="stat-card-label">Windows Processed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="stat-card-trend trend-up">
+              <i class="fas fa-arrow-up"></i>
+            </div>
+          </div>
+          <div class="stat-card-value">${formatNumber(metrics.total_flows_analyzed || 0)}</div>
+          <div class="stat-card-label">Flows Analyzed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div class="stat-card-icon" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-card-trend ${(metrics.total_errors || 0) > 10 ? 'trend-down' : 'trend-neutral'}">
+              <i class="fas fa-${(metrics.total_errors || 0) > 10 ? 'exclamation' : 'check'}"></i>
+            </div>
+          </div>
+          <div class="stat-card-value" style="color: ${(metrics.total_errors || 0) > 10 ? 'var(--danger)' : 'var(--accent-2)'};">${formatNumber(metrics.total_errors || 0)}</div>
+          <div class="stat-card-label">Total Errors</div>
+        </div>
+      `;
     }
 
     // Update dashboard
