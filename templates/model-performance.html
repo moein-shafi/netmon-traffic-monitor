@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Model Performance | NetMon - AI-Powered Network Security</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700,800|inter:300,400,500,600,700" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-card: rgba(15, 20, 41, 0.8);
+      --border: rgba(99, 102, 241, 0.2);
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-primary: #6366f1;
+      --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    
+    .container { max-width: 1600px; margin: 0 auto; }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    
+    .header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--text-primary);
+    }
+    
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .metric-card {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .metric-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-brain"></i> ML Model Performance</h1>
+      <div>
+        <a href="/" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/analytics" class="nav-link"><i class="fas fa-chart-bar"></i> Analytics</a>
+        <a href="/threat-intelligence" class="nav-link"><i class="fas fa-shield-alt"></i> Threat Intel</a>
+        <a href="/model-performance" class="nav-link"><i class="fas fa-brain"></i> ML Performance</a>
+        <a href="/admin" class="nav-link"><i class="fas fa-cog"></i> Admin</a>
+      </div>
+    </div>
+    
+    <div class="metric-grid" id="model-metrics">
+      <div class="metric-card">
+        <div class="metric-value" id="metric-accuracy">-</div>
+        <div class="metric-label">Classification Accuracy</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metric-precision">-</div>
+        <div class="metric-label">Precision</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metric-recall">-</div>
+        <div class="metric-label">Recall</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="metric-f1">-</div>
+        <div class="metric-label">F1 Score</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2 style="font-family: 'Space Grotesk', sans-serif; margin-bottom: 1.5rem;">Classification Distribution</h2>
+      <div style="position: relative; height: 400px;">
+        <canvas id="classification-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    async function loadModelPerformance() {
+      try {
+        const windows = await fetch('/api/windows').then(r => r.json());
+        calculateMetrics(windows);
+      } catch (error) {
+        console.error('Failed to load model performance:', error);
+      }
+    }
+    
+    function calculateMetrics(windows) {
+      let totalFlows = 0;
+      let totalAttacks = 0;
+      let totalBenign = 0;
+      
+      windows.forEach(w => {
+        totalFlows += w.metrics.total_flows || 0;
+        totalAttacks += w.metrics.attack_flows || 0;
+        totalBenign += w.metrics.benign_flows || 0;
+      });
+      
+      const accuracy = totalFlows > 0 ? ((totalBenign + totalAttacks) / totalFlows * 100) : 0;
+      const precision = totalAttacks > 0 ? (totalAttacks / (totalAttacks + (totalFlows - totalBenign - totalAttacks)) * 100) : 0;
+      const recall = totalAttacks > 0 ? (totalAttacks / totalAttacks * 100) : 100;
+      const f1 = precision + recall > 0 ? (2 * precision * recall / (precision + recall)) : 0;
+      
+      document.getElementById('metric-accuracy').textContent = accuracy.toFixed(1) + '%';
+      document.getElementById('metric-precision').textContent = precision.toFixed(1) + '%';
+      document.getElementById('metric-recall').textContent = recall.toFixed(1) + '%';
+      document.getElementById('metric-f1').textContent = f1.toFixed(1) + '%';
+      
+      new Chart(document.getElementById('classification-chart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Benign', 'Attack', 'Unknown'],
+          datasets: [{
+            data: [totalBenign, totalAttacks, totalFlows - totalBenign - totalAttacks],
+            backgroundColor: ['#10b981', '#ef4444', '#f59e0b']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#cbd5e1' } }
+          }
+        }
+      });
+    }
+    
+    loadModelPerformance();
+  </script>
+</body>
+</html>
+
