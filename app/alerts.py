@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 from typing import Dict, Optional, List
 from sqlalchemy.orm import Session
 
-from database import AlertModel, WindowModel
-from config import get_admin_config, get_public_config
+from app.database import AlertModel, WindowModel
+from app.config import get_admin_config, get_public_config
 
 
 def check_and_create_alerts(window: WindowModel, db: Session) -> List[AlertModel]:

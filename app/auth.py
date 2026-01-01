@@ -15,7 +15,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from config import CONFIG_DIR, SECRETS_PATH
+from app.config import CONFIG_DIR, SECRETS_PATH
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
