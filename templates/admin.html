@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NetMon Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700|inter:400,500,600" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-RXf+QSDCUQs6Q0pFxO7HA1BVr4YVdLzWDePOA3cYj2Jk+57kqfzX4nG3i1M1QrQWUcRgl41Yk6YxY9w4C2md2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --bg: #05060f;
+      --bg-2: #070b1a;
+      --card: rgba(11, 15, 32, 0.9);
+      --card-2: rgba(13, 22, 46, 0.9);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e5e7eb;
+      --muted: #93a2c0;
+      --accent: #8b5cf6;
+      --accent-2: #22d3ee;
+      --accent-3: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% -10%, rgba(139, 92, 246, 0.15), transparent 35%),
+        radial-gradient(circle at 90% 10%, rgba(34, 211, 238, 0.15), transparent 40%),
+        linear-gradient(140deg, #05060f 0%, #0b0f24 45%, #05060f 100%);
+      color: var(--text);
+      padding: 28px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .header h1 {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 32px;
+      color: var(--accent-2);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+      color: #050816;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--card);
+      padding: 8px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 12px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+      color: #050816;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--accent-2);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+    }
+
+    .form-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table th {
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.5);
+    }
+
+    .alert {
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid;
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #4ade80;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+    }
+
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 40px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .login-title {
+      text-align: center;
+      margin-bottom: 32px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 28px;
+      color: var(--accent-2);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(139, 92, 246, 0.1));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent-2);
+      margin: 8px 0;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-container">
+    <h1 class="login-title">NetMon Admin</h1>
+    <form id="login-form">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="login-username" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="login-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Login</button>
+      <div id="login-error" class="alert alert-error hidden" style="margin-top: 16px;"></div>
+    </form>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" class="hidden">
+    <div class="container">
+      <div class="header">
+        <h1><i class="fa-solid fa-shield-halved"></i> NetMon Admin Panel</h1>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="window.location.href='/'">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+          </button>
+          <button class="btn btn-danger" onclick="logout()">
+            <i class="fa-solid fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('config')">Configuration</div>
+        <div class="tab" onclick="switchTab('llm')">LLM Providers</div>
+        <div class="tab" onclick="switchTab('worker')">Worker Status</div>
+        <div class="tab" onclick="switchTab('users')">Users</div>
+        <div class="tab" onclick="switchTab('alerts')">Alerts</div>
+        <div class="tab" onclick="switchTab('audit')">Audit Logs</div>
+        <div class="tab" onclick="switchTab('export')">Export</div>
+      </div>
+
+      <!-- Configuration Tab -->
+      <div id="tab-config" class="tab-content active">
+        <div class="card">
+          <div class="card-title">Public Configuration</div>
+          <form id="public-config-form">
+            <div class="form-group">
+              <label class="form-label">Dashboard Refresh Interval (seconds)</label>
+              <input type="number" class="form-input" name="dashboard.refresh_interval_seconds" min="10" max="300">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Windows Display</label>
+              <input type="number" class="form-input" name="dashboard.max_windows_display" min="1" max="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Alert Threshold - Attack %</label>
+              <input type="number" class="form-input" name="alerts.alert_threshold_attack_percent" min="0" max="100" step="0.1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Alert Threshold - Unknown %</label>
+              <input type="number" class="form-input" name="alerts.alert_threshold_unknown_percent" min="0" max="100" step="0.1">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Public Config</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Admin Configuration</div>
+          <form id="admin-config-form">
+            <div class="form-group">
+              <label class="form-label">PCAP Directory</label>
+              <input type="text" class="form-input" name="capture.pcap_dir">
+            </div>
+            <div class="form-group">
+              <label class="form-label">CSV Directory</label>
+              <input type="text" class="form-input" name="capture.csv_dir">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Window Duration (minutes)</label>
+              <input type="number" class="form-input" name="capture.window_duration_minutes" min="1" max="60">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Worker Interval (seconds)</label>
+              <input type="number" class="form-input" name="capture.worker_interval_seconds" min="10" max="3600">
+            </div>
+            <div class="form-group">
+              <label class="form-label">ML Model Path</label>
+              <input type="text" class="form-input" name="ml.model_path">
+            </div>
+            <div class="form-group">
+              <label class="form-label">ML Threshold</label>
+              <input type="number" class="form-input" name="ml.threshold" min="0" max="1" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" class="form-checkbox" name="ml.enabled">
+                <span class="form-label" style="display: inline; margin-left: 8px;">ML Enabled</span>
+              </label>
+            </div>
+            <div class="form-group">
+              <label class="form-label">LLM Provider</label>
+              <input type="text" class="form-input" name="llm.provider" placeholder="e.g., ollama, openai, anthropic">
+              <small style="color: var(--muted); font-size: 12px;">Configure in LLM Providers tab</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label">LLM Model</label>
+              <input type="text" class="form-input" name="llm.model" placeholder="e.g., smollm2:135m, gpt-4">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Provider URL (Optional)</label>
+              <input type="text" class="form-input" name="llm.provider_url" placeholder="Leave empty for default">
+            </div>
+            <div class="form-group">
+              <label class="form-label">LLM Timeout (seconds)</label>
+              <input type="number" class="form-input" name="llm.timeout_seconds" min="10" max="300" value="60">
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" class="form-checkbox" name="llm.enabled">
+                <span class="form-label" style="display: inline; margin-left: 8px;">LLM Enabled</span>
+              </label>
+            </div>
+            <div style="padding: 1rem; background: rgba(99, 102, 241, 0.1); border-radius: 8px; margin-top: 1rem;">
+              <div style="font-weight: 600; margin-bottom: 0.5rem;">💡 Tip</div>
+              <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                For advanced LLM configuration, API key management, and provider testing, use the <strong>LLM Providers</strong> tab.
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Admin Config</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Users Tab -->
+      <div id="tab-users" class="tab-content">
+        <div class="card">
+          <div class="card-title">Create New User</div>
+          <form id="create-user-form">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" class="form-input" id="new-username" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" class="form-input" id="new-password" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <select class="form-input" id="new-role">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create User</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Users</div>
+          <table class="table" id="users-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr><td colspan="4" style="text-align: center; padding: 20px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Alerts Tab -->
+      <div id="tab-alerts" class="tab-content">
+        <div class="card">
+          <div class="card-title">Alerts</div>
+          <table class="table" id="alerts-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Severity</th>
+                <th>Title</th>
+                <th>Created</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="alerts-table-body">
+              <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Audit Logs Tab -->
+      <div id="tab-audit" class="tab-content">
+        <div class="card">
+          <div class="card-title">Audit Logs</div>
+          <table class="table" id="audit-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Resource</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <tr><td colspan="5" style="text-align: center; padding: 20px;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LLM Providers Tab -->
+      <div id="tab-llm" class="tab-content">
+        <div class="card">
+          <div class="card-title">LLM Provider Configuration</div>
+          <form id="llm-config-form">
+            <div class="form-group">
+              <label class="form-label">Provider</label>
+              <select class="form-input" id="llm-provider" onchange="updateLLMProvider()">
+                <option value="">Select Provider</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model</label>
+              <select class="form-input" id="llm-model">
+                <option value="">Select Model</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Provider URL (Optional, for custom endpoints)</label>
+              <input type="text" class="form-input" id="llm-provider-url" placeholder="Leave empty for default">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Timeout (seconds)</label>
+              <input type="number" class="form-input" id="llm-timeout" min="10" max="300" value="60">
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" class="form-checkbox" id="llm-enabled">
+                <span class="form-label" style="display: inline; margin-left: 8px;">LLM Enabled</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save LLM Config</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Available Providers</div>
+          <div id="providers-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+            <div style="text-align: center; padding: 2rem; color: var(--muted);">Loading providers...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">API Key Management</div>
+          <div id="api-keys-section">
+            <div style="text-align: center; padding: 2rem; color: var(--muted);">Select a provider to manage API keys</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Test LLM Provider</div>
+          <form id="test-llm-form">
+            <div class="form-group">
+              <label class="form-label">Provider</label>
+              <select class="form-input" id="test-provider" required>
+                <option value="">Select Provider</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Model</label>
+              <select class="form-input" id="test-model" required>
+                <option value="">Select Model</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Test Prompt</label>
+              <textarea class="form-input" id="test-prompt" rows="4" required>Hello, this is a test. Please respond briefly.</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Test Provider</button>
+          </form>
+          <div id="test-result" style="margin-top: 1rem;"></div>
+        </div>
+      </div>
+
+      <!-- Worker Status Tab -->
+      <div id="tab-worker" class="tab-content">
+        <div class="card">
+          <div class="card-title">
+            <i class="fa-solid fa-server"></i> Worker Status & Performance
+            <button class="btn btn-secondary" onclick="refreshWorkerStatus()" style="float: right;">
+              <i class="fa-solid fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+          <div id="worker-status-content">
+            <div style="text-align: center; padding: 40px; color: var(--muted);">Loading worker status...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Worker Configuration</div>
+          <form id="worker-config-form">
+            <div class="grid">
+              <div class="form-group">
+                <label class="form-label">Worker Interval (seconds)</label>
+                <input type="number" class="form-input" name="capture.worker_interval_seconds" min="10" max="3600">
+                <small style="color: var(--muted); font-size: 12px;">How often the worker processes new files</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Windows to Keep</label>
+                <input type="number" class="form-input" name="capture.max_windows_keep" min="1" max="1000">
+                <small style="color: var(--muted); font-size: 12px;">Maximum number of windows stored in database</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">PCAP Min Age (seconds)</label>
+                <input type="number" class="form-input" name="capture.pcap_min_age_seconds" min="0" max="300">
+                <small style="color: var(--muted); font-size: 12px;">Wait time before processing PCAP files</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">NTLFlowLyzer Threads</label>
+                <input type="number" class="form-input" name="ntlflowlyzer.threads" min="1" max="16">
+                <small style="color: var(--muted); font-size: 12px;">Number of processing threads</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Retries</label>
+                <input type="number" class="form-input" name="ntlflowlyzer.max_retries" min="0" max="10">
+                <small style="color: var(--muted); font-size: 12px;">Retry attempts for failed processing</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Retry Delay (seconds)</label>
+                <input type="number" class="form-input" name="ntlflowlyzer.retry_delay_seconds" min="1" max="60">
+                <small style="color: var(--muted); font-size: 12px;">Delay between retries</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>
+                <input type="checkbox" class="form-checkbox" name="ntlflowlyzer.parallel_processing">
+                <span class="form-label" style="display: inline; margin-left: 8px;">Enable Parallel Processing</span>
+              </label>
+              <small style="color: var(--muted); font-size: 12px; display: block; margin-top: 4px;">Process multiple files simultaneously</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Worker Config</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Export Tab -->
+      <div id="tab-export" class="tab-content">
+        <div class="card">
+          <div class="card-title">Export Data</div>
+          <div class="grid">
+            <div class="stat-card">
+              <div class="stat-label">CSV Export</div>
+              <div class="stat-value"><i class="fa-solid fa-file-csv"></i></div>
+              <button class="btn btn-primary" onclick="exportData('csv')" style="width: 100%; margin-top: 16px;">Export CSV</button>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">JSON Export</div>
+              <div class="stat-value"><i class="fa-solid fa-file-code"></i></div>
+              <button class="btn btn-primary" onclick="exportData('json')" style="width: 100%; margin-top: 16px;">Export JSON</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let authToken = null;
+
+    // Check if already logged in
+    const storedToken = localStorage.getItem('netmon_admin_token');
+    if (storedToken) {
+      authToken = storedToken;
+      showAdminPanel();
+    }
+
+    // Login form handler
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Invalid credentials');
+        }
+
+        const data = await response.json();
+        authToken = data.access_token;
+        localStorage.setItem('netmon_admin_token', authToken);
+        showAdminPanel();
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.classList.remove('hidden');
+      }
+    });
+
+    function showAdminPanel() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('admin-panel').classList.remove('hidden');
+      loadData();
+    }
+
+    function logout() {
+      authToken = null;
+      localStorage.removeItem('netmon_admin_token');
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('admin-panel').classList.add('hidden');
+    }
+
+    function getAuthHeaders() {
+      return {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json',
+      };
+    }
+
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+      // Show selected tab
+      event.target.classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      
+      if (tabName === 'llm') {
+        loadLLMProviders();
+        loadLLMConfig();
+      }
+      if (tabName === 'worker') {
+        loadWorkerStatus();
+        loadWorkerConfig();
+      }
+      if (tabName === 'users') loadUsers();
+      if (tabName === 'alerts') loadAlerts();
+      if (tabName === 'audit') loadAuditLogs();
+    }
+
+    async function loadData() {
+      await Promise.all([
+        loadPublicConfig(),
+        loadAdminConfig(),
+        loadUsers(),
+      ]);
+    }
+
+    async function loadPublicConfig() {
+      try {
+        const response = await fetch('/api/config/public');
+        const config = await response.json();
+        
+        // Populate form
+        Object.entries(config.dashboard || {}).forEach(([key, value]) => {
+          const input = document.querySelector(`[name="dashboard.${key}"]`);
+          if (input) input.value = value;
+        });
+        
+        Object.entries(config.alerts || {}).forEach(([key, value]) => {
+          const input = document.querySelector(`[name="alerts.${key}"]`);
+          if (input) {
+            if (input.type === 'checkbox') input.checked = value;
+            else input.value = value;
+          }
+        });
+      } catch (error) {
+        console.error('Failed to load public config:', error);
+      }
+    }
+
+    async function loadAdminConfig() {
+      try {
+        const response = await fetch('/api/admin/config', { headers: getAuthHeaders() });
+        const config = await response.json();
+        
+        // Populate form
+        Object.entries(config).forEach(([section, values]) => {
+          Object.entries(values || {}).forEach(([key, value]) => {
+            const input = document.querySelector(`[name="${section}.${key}"]`);
+            if (input) {
+              if (input.type === 'checkbox') input.checked = value;
+              else input.value = value;
+            }
+          });
+        });
+      } catch (error) {
+        console.error('Failed to load admin config:', error);
+      }
+    }
+
+    document.getElementById('public-config-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const updates = {};
+      
+      for (const [key, value] of formData.entries()) {
+        const [section, field] = key.split('.');
+        if (!updates[section]) updates[section] = {};
+        updates[section][field] = isNaN(value) ? value : parseFloat(value);
+      }
+
+      try {
+        const response = await fetch('/api/config/public', {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ updates }),
+        });
+        if (response.ok) {
+          alert('Public configuration updated successfully!');
+        }
+      } catch (error) {
+        alert('Failed to update configuration: ' + error.message);
+      }
+    });
+
+    document.getElementById('admin-config-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const updates = {};
+      
+      for (const [key, value] of formData.entries()) {
+        const [section, field] = key.split('.');
+        if (!updates[section]) updates[section] = {};
+        if (e.target.querySelector(`[name="${key}"]`).type === 'checkbox') {
+          updates[section][field] = e.target.querySelector(`[name="${key}"]`).checked;
+        } else {
+          updates[section][field] = isNaN(value) ? value : parseFloat(value);
+        }
+      }
+
+      try {
+        const response = await fetch('/api/admin/config', {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ updates }),
+        });
+        if (response.ok) {
+          alert('Admin configuration updated successfully!');
+        }
+      } catch (error) {
+        alert('Failed to update configuration: ' + error.message);
+      }
+    });
+
+    document.getElementById('create-user-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('new-username').value;
+      const password = document.getElementById('new-password').value;
+      const role = document.getElementById('new-role').value;
+
+      try {
+        const response = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ username, password, role }),
+        });
+        if (response.ok) {
+          alert('User created successfully!');
+          e.target.reset();
+          loadUsers();
+        } else {
+          const error = await response.json();
+          alert('Failed to create user: ' + error.detail);
+        }
+      } catch (error) {
+        alert('Failed to create user: ' + error.message);
+      }
+    });
+
+    async function loadUsers() {
+      try {
+        const response = await fetch('/api/admin/users', { headers: getAuthHeaders() });
+        const users = await response.json();
+        
+        const tbody = document.getElementById('users-table-body');
+        tbody.innerHTML = users.map(user => `
+          <tr>
+            <td>${user.username}</td>
+            <td><span class="badge ${user.role === 'admin' ? 'badge-danger' : 'badge-success'}">${user.role}</span></td>
+            <td>${new Date(user.created_at).toLocaleString()}</td>
+            <td><button class="btn btn-secondary" onclick="changePassword('${user.username}')">Change Password</button></td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load users:', error);
+      }
+    }
+
+    async function loadAlerts() {
+      try {
+        const response = await fetch('/api/alerts?acknowledged=false&limit=100');
+        const alerts = await response.json();
+        
+        const tbody = document.getElementById('alerts-table-body');
+        tbody.innerHTML = alerts.map(alert => `
+          <tr>
+            <td>${alert.id}</td>
+            <td><span class="badge badge-${alert.severity === 'high' ? 'danger' : alert.severity === 'medium' ? 'warning' : 'success'}">${alert.alert_type}</span></td>
+            <td>${alert.severity}</td>
+            <td>${alert.title}</td>
+            <td>${new Date(alert.created_at).toLocaleString()}</td>
+            <td>${alert.acknowledged ? 'Acknowledged' : 'New'}</td>
+            <td>
+              ${!alert.acknowledged ? `<button class="btn btn-secondary" onclick="acknowledgeAlert(${alert.id})">Acknowledge</button>` : ''}
+              ${!alert.resolved ? `<button class="btn btn-primary" onclick="resolveAlert(${alert.id})">Resolve</button>` : 'Resolved'}
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load alerts:', error);
+      }
+    }
+
+    async function loadAuditLogs() {
+      try {
+        const response = await fetch('/api/admin/audit-logs?limit=100', { headers: getAuthHeaders() });
+        const logs = await response.json();
+        
+        const tbody = document.getElementById('audit-table-body');
+        tbody.innerHTML = logs.map(log => `
+          <tr>
+            <td>${new Date(log.created_at).toLocaleString()}</td>
+            <td>${log.username}</td>
+            <td>${log.action}</td>
+            <td>${log.resource || '-'}</td>
+            <td>${log.ip_address || '-'}</td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Failed to load audit logs:', error);
+      }
+    }
+
+    async function acknowledgeAlert(id) {
+      try {
+        const response = await fetch(`/api/admin/alerts/${id}/acknowledge`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        });
+        if (response.ok) {
+          loadAlerts();
+        }
+      } catch (error) {
+        alert('Failed to acknowledge alert: ' + error.message);
+      }
+    }
+
+    async function resolveAlert(id) {
+      try {
+        const response = await fetch(`/api/admin/alerts/${id}/resolve`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        });
+        if (response.ok) {
+          loadAlerts();
+        }
+      } catch (error) {
+        alert('Failed to resolve alert: ' + error.message);
+      }
+    }
+
+    function exportData(format) {
+      const url = `/api/admin/export/${format}`;
+      window.open(url + '?token=' + authToken, '_blank');
+    }
+
+    function changePassword(username) {
+      const newPassword = prompt(`Enter new password for ${username}:`);
+      if (newPassword) {
+        fetch(`/api/admin/users/${username}/password`, {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ new_password: newPassword }),
+        }).then(response => {
+          if (response.ok) {
+            alert('Password updated successfully!');
+          } else {
+            alert('Failed to update password');
+          }
+        });
+      }
+    }
+
+    async function loadWorkerStatus() {
+      try {
+        const response = await fetch('/api/admin/worker/status', { headers: getAuthHeaders() });
+        const data = await response.json();
+        
+        const container = document.getElementById('worker-status-content');
+        const health = data.health;
+        const metrics = data.metrics;
+        const config = data.configuration;
+        
+        const statusBadge = health.status === 'healthy' ? 'badge-success' : 
+                           health.status === 'degraded' ? 'badge-warning' : 'badge-danger';
+        
+        const uptimeHours = Math.floor(health.uptime_seconds / 3600);
+        const uptimeMinutes = Math.floor((health.uptime_seconds % 3600) / 60);
+        
+        container.innerHTML = `
+          <div class="grid" style="margin-bottom: 24px;">
+            <div class="stat-card">
+              <div class="stat-label">Worker Status</div>
+              <div class="stat-value" style="font-size: 24px;">
+                <span class="badge ${statusBadge}">${health.status.toUpperCase()}</span>
+              </div>
+              <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                Running: ${health.running ? 'Yes' : 'No'}
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Uptime</div>
+              <div class="stat-value" style="font-size: 24px;">${uptimeHours}h ${uptimeMinutes}m</div>
+              <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                Started: ${new Date(metrics.start_time).toLocaleString()}
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Windows Processed</div>
+              <div class="stat-value">${metrics.total_processed_windows.toLocaleString()}</div>
+              <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                Last: ${metrics.last_window_processed ? new Date(metrics.last_window_processed).toLocaleString() : 'Never'}
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Flows Analyzed</div>
+              <div class="stat-value">${metrics.total_flows_analyzed.toLocaleString()}</div>
+              <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                ML Classifications: ${metrics.ml_classifications.toLocaleString()}
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Alerts Created</div>
+              <div class="stat-value">${metrics.total_alerts_created.toLocaleString()}</div>
+              <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                LLM Summaries: ${metrics.llm_summaries_generated}
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Error Count</div>
+              <div class="stat-value" style="color: ${metrics.total_errors > 10 ? 'var(--danger)' : 'var(--accent-2)'};">${metrics.total_errors}</div>
+              <div style="margin-top: 8px; color: var(--muted); font-size: 12px;">
+                NTLFlowLyzer: ${metrics.ntlflowlyzer_errors} | DB: ${metrics.database_errors}
+              </div>
+            </div>
+          </div>
+          
+          <div class="card" style="margin-top: 24px;">
+            <div class="card-title">Performance Metrics</div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Average Time</th>
+                  <th>Last Activity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>PCAP Processing</td>
+                  <td>${metrics.avg_processing_time_pcap ? metrics.avg_processing_time_pcap.toFixed(2) + 's' : 'N/A'}</td>
+                  <td>${metrics.last_pcap_processed ? new Date(metrics.last_pcap_processed).toLocaleString() : 'Never'}</td>
+                </tr>
+                <tr>
+                  <td>CSV Processing</td>
+                  <td>${metrics.avg_processing_time_csv ? metrics.avg_processing_time_csv.toFixed(2) + 's' : 'N/A'}</td>
+                  <td>${metrics.last_csv_processed ? new Date(metrics.last_csv_processed).toLocaleString() : 'Never'}</td>
+                </tr>
+                <tr>
+                  <td>Window Processing</td>
+                  <td>${metrics.avg_processing_time_window ? metrics.avg_processing_time_window.toFixed(2) + 's' : 'N/A'}</td>
+                  <td>${metrics.last_window_processed ? new Date(metrics.last_window_processed).toLocaleString() : 'Never'}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="card" style="margin-top: 24px;">
+            <div class="card-title">Current Configuration</div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Worker Interval</td><td>${config.worker_interval_seconds}s</td></tr>
+                <tr><td>Max Windows Keep</td><td>${config.max_windows_keep}</td></tr>
+                <tr><td>Window Duration</td><td>${config.window_duration_minutes} minutes</td></tr>
+                <tr><td>ML Enabled</td><td>${config.ml_enabled ? 'Yes' : 'No'}</td></tr>
+                <tr><td>LLM Enabled</td><td>${config.llm_enabled ? 'Yes' : 'No'}</td></tr>
+                <tr><td>Parallel Processing</td><td>${config.parallel_processing ? 'Yes' : 'No'}</td></tr>
+                <tr><td>Max Retries</td><td>${config.max_retries}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } catch (error) {
+        document.getElementById('worker-status-content').innerHTML = 
+          `<div class="alert alert-error">Failed to load worker status: ${error.message}</div>`;
+      }
+    }
+
+    async function loadWorkerConfig() {
+      try {
+        const response = await fetch('/api/admin/config', { headers: getAuthHeaders() });
+        const config = await response.json();
+        
+        // Populate worker config form
+        const form = document.getElementById('worker-config-form');
+        if (form) {
+          Object.entries(config.capture || {}).forEach(([key, value]) => {
+            const input = form.querySelector(`[name="capture.${key}"]`);
+            if (input) input.value = value;
+          });
+          
+          Object.entries(config.ntlflowlyzer || {}).forEach(([key, value]) => {
+            const input = form.querySelector(`[name="ntlflowlyzer.${key}"]`);
+            if (input) {
+              if (input.type === 'checkbox') input.checked = value;
+              else input.value = value;
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load worker config:', error);
+      }
+    }
+
+    function refreshWorkerStatus() {
+      loadWorkerStatus();
+    }
+
+    async function loadLLMProviders() {
+      try {
+        const response = await fetch('/api/llm/providers', { headers: getAuthHeaders() });
+        const providers = await response.json();
+        
+        // Populate provider selects
+        const providerSelect = document.getElementById('llm-provider');
+        const testProviderSelect = document.getElementById('test-provider');
+        
+        providerSelect.innerHTML = '<option value="">Select Provider</option>';
+        testProviderSelect.innerHTML = '<option value="">Select Provider</option>';
+        
+        Object.entries(providers).forEach(([id, info]) => {
+          const option = `<option value="${id}">${info.name} ${info.requires_key ? '(API Key Required)' : '(Free)'}</option>`;
+          providerSelect.innerHTML += option;
+          testProviderSelect.innerHTML += option;
+        });
+        
+        // Display providers list
+        const providersList = document.getElementById('providers-list');
+        providersList.innerHTML = Object.entries(providers).map(([id, info]) => `
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;">
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">${info.name}</div>
+            <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+              ${info.type === 'local' ? 'Local' : 'API'} Provider
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Available Models:</div>
+              <div style="font-size: 0.875rem;">
+                ${info.models.slice(0, 3).join(', ')}${info.models.length > 3 ? '...' : ''}
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span class="badge ${info.configured ? 'badge-success' : 'badge-warning'}">
+                ${info.configured ? 'Configured' : 'Not Configured'}
+              </span>
+              ${info.requires_key ? (
+                info.has_api_key ? 
+                  '<span class="badge badge-success">API Key Set</span>' :
+                  '<span class="badge badge-danger">API Key Required</span>'
+              ) : ''}
+            </div>
+          </div>
+        `).join('');
+        
+        // Update API keys section
+        updateAPIKeysSection(providers);
+      } catch (error) {
+        console.error('Failed to load LLM providers:', error);
+      }
+    }
+
+    function updateLLMProvider() {
+      const providerId = document.getElementById('llm-provider').value;
+      const modelSelect = document.getElementById('llm-model');
+      const testProviderId = document.getElementById('test-provider').value;
+      const testModelSelect = document.getElementById('test-model');
+      
+      fetch('/api/llm/providers', { headers: getAuthHeaders() })
+        .then(r => r.json())
+        .then(providers => {
+          if (providerId && providers[providerId]) {
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            providers[providerId].models.forEach(model => {
+              modelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+            });
+          }
+          
+          if (testProviderId && providers[testProviderId]) {
+            testModelSelect.innerHTML = '<option value="">Select Model</option>';
+            providers[testProviderId].models.forEach(model => {
+              testModelSelect.innerHTML += `<option value="${model}">${model}</option>`;
+            });
+          }
+        });
+    }
+
+    function updateAPIKeysSection(providers) {
+      const section = document.getElementById('api-keys-section');
+      const paidProviders = Object.entries(providers).filter(([_, info]) => info.requires_key);
+      
+      if (paidProviders.length === 0) {
+        section.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted);">No paid providers available</div>';
+        return;
+      }
+      
+      section.innerHTML = paidProviders.map(([id, info]) => `
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+              <div style="font-weight: 600;">${info.name}</div>
+              <div style="color: var(--text-muted); font-size: 0.875rem;">${info.key_name || 'API Key'}</div>
+            </div>
+            <div>
+              ${info.has_api_key ? 
+                '<span class="badge badge-success">Key Set</span>' : 
+                '<span class="badge badge-danger">No Key</span>'
+              }
+            </div>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="password" class="form-input" id="api-key-${id}" placeholder="Enter API key" 
+                   style="flex: 1; ${info.has_api_key ? 'display: none;' : ''}">
+            <button class="btn btn-primary" onclick="saveAPIKey('${id}')" 
+                    ${info.has_api_key ? 'style="display: none;"' : ''}>
+              Save Key
+            </button>
+            ${info.has_api_key ? `
+              <button class="btn btn-secondary" onclick="deleteAPIKey('${id}')">Delete Key</button>
+              <button class="btn btn-secondary" onclick="showAPIKeyInput('${id}')">Update Key</button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function saveAPIKey(providerId) {
+      const input = document.getElementById(`api-key-${providerId}`);
+      const key = input.value.trim();
+      
+      if (!key) {
+        alert('Please enter an API key');
+        return;
+      }
+      
+      fetch(`/api/admin/llm/providers/${providerId}/key`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ api_key: key }),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'saved') {
+          alert('API key saved successfully!');
+          loadLLMProviders();
+        } else {
+          alert('Failed to save API key');
+        }
+      })
+      .catch(error => {
+        alert('Error: ' + error.message);
+      });
+    }
+
+    function deleteAPIKey(providerId) {
+      if (!confirm(`Delete API key for ${providerId}?`)) return;
+      
+      fetch(`/api/admin/llm/providers/${providerId}/key`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'deleted') {
+          alert('API key deleted');
+          loadLLMProviders();
+        }
+      });
+    }
+
+    function showAPIKeyInput(providerId) {
+      const input = document.getElementById(`api-key-${providerId}`);
+      const saveBtn = input.nextElementSibling;
+      input.style.display = 'block';
+      saveBtn.style.display = 'block';
+    }
+
+    async function loadLLMConfig() {
+      try {
+        const response = await fetch('/api/admin/config', { headers: getAuthHeaders() });
+        const config = await response.json();
+        
+        const llmConfig = config.llm || {};
+        document.getElementById('llm-provider').value = llmConfig.provider || '';
+        document.getElementById('llm-model').value = llmConfig.model || '';
+        document.getElementById('llm-provider-url').value = llmConfig.provider_url || '';
+        document.getElementById('llm-timeout').value = llmConfig.timeout_seconds || 60;
+        document.getElementById('llm-enabled').checked = llmConfig.enabled !== false;
+        
+        if (llmConfig.provider) {
+          updateLLMProvider();
+        }
+      } catch (error) {
+        console.error('Failed to load LLM config:', error);
+      }
+    }
+
+    document.getElementById('llm-config-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const updates = {
+        llm: {
+          provider: document.getElementById('llm-provider').value,
+          model: document.getElementById('llm-model').value,
+          provider_url: document.getElementById('llm-provider-url').value || null,
+          timeout_seconds: parseInt(document.getElementById('llm-timeout').value),
+          enabled: document.getElementById('llm-enabled').checked,
+        }
+      };
+      
+      try {
+        const response = await fetch('/api/admin/config', {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ updates }),
+        });
+        if (response.ok) {
+          alert('LLM configuration updated successfully!');
+        }
+      } catch (error) {
+        alert('Failed to update configuration: ' + error.message);
+      }
+    });
+
+    document.getElementById('test-llm-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const resultDiv = document.getElementById('test-result');
+      resultDiv.innerHTML = '<div style="padding: 1rem; background: var(--bg-secondary); border-radius: 8px;">Testing...</div>';
+      
+      try {
+        const response = await fetch('/api/admin/llm/test', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            provider: document.getElementById('test-provider').value,
+            model: document.getElementById('test-model').value,
+            prompt: document.getElementById('test-prompt').value,
+          }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          resultDiv.innerHTML = `
+            <div class="alert alert-success">
+              <strong>Success!</strong><br>
+              <pre style="margin-top: 0.5rem; white-space: pre-wrap;">${data.response}</pre>
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="alert alert-error">
+              <strong>Error:</strong> ${data.message || 'Test failed'}
+            </div>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="alert alert-error">
+            <strong>Error:</strong> ${error.message}
+          </div>
+        `;
+      }
+    });
+
+    document.getElementById('worker-config-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const updates = {};
+      
+      for (const [key, value] of formData.entries()) {
+        const [section, field] = key.split('.');
+        if (!updates[section]) updates[section] = {};
+        if (e.target.querySelector(`[name="${key}"]`).type === 'checkbox') {
+          updates[section][field] = e.target.querySelector(`[name="${key}"]`).checked;
+        } else {
+          updates[section][field] = isNaN(value) ? value : parseFloat(value);
+        }
+      }
+
+      try {
+        const response = await fetch('/api/admin/config', {
+          method: 'PUT',
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ updates }),
+        });
+        if (response.ok) {
+          alert('Worker configuration updated successfully!');
+          loadWorkerStatus();
+        }
+      } catch (error) {
+        alert('Failed to update configuration: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
+
