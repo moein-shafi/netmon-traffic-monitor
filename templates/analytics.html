@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Analytics | NetMon - AI-Powered Network Security</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700,800|inter:300,400,500,600,700|jetbrains-mono:400,500" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-primary: #0a0e27;
+      --bg-secondary: #0f1429;
+      --bg-card: rgba(15, 20, 41, 0.8);
+      --border: rgba(99, 102, 241, 0.2);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-secondary: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    
+    .container { max-width: 1600px; margin: 0 auto; }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+    
+    .header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    
+    .nav-link:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent-primary);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 400px;
+      margin-top: 1rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-chart-line"></i> Advanced Analytics</h1>
+      <div>
+        <a href="/" class="nav-link"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="/admin" class="nav-link"><i class="fas fa-cog"></i> Admin</a>
+        <a href="/threat-intelligence" class="nav-link"><i class="fas fa-shield-alt"></i> Threat Intel</a>
+        <a href="/model-performance" class="nav-link"><i class="fas fa-brain"></i> ML Performance</a>
+      </div>
+    </div>
+    
+    <div class="stats-grid" id="analytics-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="stat-total-windows">-</div>
+        <div class="stat-label">Total Windows</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-total-flows">-</div>
+        <div class="stat-label">Total Flows</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-attack-rate">-</div>
+        <div class="stat-label">Attack Rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="stat-detection-accuracy">-</div>
+        <div class="stat-label">Detection Accuracy</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">Traffic Trends Over Time</div>
+      <div class="chart-container">
+        <canvas id="trends-chart"></canvas>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">Attack Pattern Analysis</div>
+      <div class="chart-container">
+        <canvas id="attack-patterns-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    async function loadAnalytics() {
+      try {
+        const [windows, analytics] = await Promise.all([
+          fetch('/api/windows').then(r => r.json()),
+          fetch('/api/analytics/summary').then(r => r.json())
+        ]);
+        
+        updateStats(analytics);
+        updateCharts(windows);
+      } catch (error) {
+        console.error('Failed to load analytics:', error);
+      }
+    }
+    
+    function updateStats(analytics) {
+      document.getElementById('stat-total-windows').textContent = analytics.total_windows || 0;
+      document.getElementById('stat-total-flows').textContent = (analytics.total_flows || 0).toLocaleString();
+      document.getElementById('stat-attack-rate').textContent = (analytics.attack_percentage || 0).toFixed(1) + '%';
+      document.getElementById('stat-detection-accuracy').textContent = 
+        (100 - (analytics.attack_percentage || 0)).toFixed(1) + '%';
+    }
+    
+    function updateCharts(windows) {
+      // Implementation for charts
+      const sorted = windows.sort((a, b) => new Date(a.metrics.start_time) - new Date(b.metrics.start_time));
+      
+      new Chart(document.getElementById('trends-chart'), {
+        type: 'line',
+        data: {
+          labels: sorted.map(w => new Date(w.metrics.start_time).toLocaleString()),
+          datasets: [{
+            label: 'Total Flows',
+            data: sorted.map(w => w.metrics.total_flows),
+            borderColor: '#6366f1',
+            tension: 0.4
+          }, {
+            label: 'Attack Flows',
+            data: sorted.map(w => w.metrics.attack_flows),
+            borderColor: '#ef4444',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#cbd5e1' } }
+          },
+          scales: {
+            x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(99, 102, 241, 0.1)' } },
+            y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(99, 102, 241, 0.1)' } }
+          }
+        }
+      });
+    }
+    
+    loadAnalytics();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,16 @@
+[Unit]
+Description=NetMon Worker Process
+After=network.target netmon-api.service
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/path/to/project
+Environment="PATH=/path/to/venv/bin"
+ExecStart=/path/to/venv/bin/python -m app.worker
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+

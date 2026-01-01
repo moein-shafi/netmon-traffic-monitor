@@ -1,26 +1,64 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-*.log
-
-# Virtual environment
+*$py.class
+*.so
+.Python
 env/
-.venv/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Data & models
-data/
-model/
-*.pcap
-*.csv
-
-# System-specific stuff
+# IDEs
+.vscode/
+.idea/
 *.swp
 *.swo
-.DS_Store
+*~
 
-# Pip / wheel cache
-*.egg-info/
-dist/
-build/
+# Environment
+.env
+.env.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NetMon specific
+/var/netmon/
+/var/pcaps/
+/opt/netmon/
+
+# Config (contains secrets)
+app/configs/
+configs/*.json
+!configs/systemd/
+!configs/nginx/
+
+# Model files (large)
+*.joblib
+*.pkl
+*.h5
