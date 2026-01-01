@@ -297,7 +297,7 @@ def get_alerts(
             "severity": a.severity,
             "title": a.title,
             "message": a.message,
-            "metadata": a.metadata or {},
+            "metadata": a.alert_metadata or {},
             "acknowledged": a.acknowledged,
             "resolved": a.resolved,
             "created_at": a.created_at.isoformat(),

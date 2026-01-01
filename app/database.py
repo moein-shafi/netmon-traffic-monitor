@@ -69,7 +69,7 @@ class AlertModel(Base):
     severity = Column(String, nullable=False)  # 'high', 'medium', 'low'
     title = Column(String, nullable=False)
     message = Column(Text, nullable=False)
-    metadata = Column(JSON, default=dict)
+    alert_metadata = Column(JSON, default=dict)  # Renamed from 'metadata' (SQLAlchemy reserved)
     
     # Status
     acknowledged = Column(Boolean, default=False)

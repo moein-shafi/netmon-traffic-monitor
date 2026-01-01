@@ -43,7 +43,7 @@ def check_and_create_alerts(window: WindowModel, db: Session) -> List[AlertModel
             severity="high",
             title="Critical: High Attack Rate Detected",
             message=f"Window {window.id} shows {attack_percent:.1f}% attack flows ({window.attack_flows} out of {total_flows} flows). Immediate attention required.",
-            metadata={
+            alert_metadata={
                 "attack_percent": attack_percent,
                 "attack_flows": window.attack_flows,
                 "total_flows": total_flows,
@@ -61,7 +61,7 @@ def check_and_create_alerts(window: WindowModel, db: Session) -> List[AlertModel
             severity="medium",
             title="Elevated: Attack Activity Detected",
             message=f"Window {window.id} shows {attack_percent:.1f}% attack flows ({window.attack_flows} out of {total_flows} flows). Review recommended.",
-            metadata={
+            alert_metadata={
                 "attack_percent": attack_percent,
                 "attack_flows": window.attack_flows,
                 "total_flows": total_flows,
@@ -79,7 +79,7 @@ def check_and_create_alerts(window: WindowModel, db: Session) -> List[AlertModel
             severity="medium",
             title="Elevated: High Unknown Flow Rate",
             message=f"Window {window.id} shows {unknown_percent:.1f}% unknown flows ({window.unknown_flows} out of {total_flows} flows). Investigation recommended.",
-            metadata={
+            alert_metadata={
                 "unknown_percent": unknown_percent,
                 "unknown_flows": window.unknown_flows,
                 "total_flows": total_flows,
@@ -97,7 +97,7 @@ def check_and_create_alerts(window: WindowModel, db: Session) -> List[AlertModel
             severity="low",
             title="Info: High Traffic Volume",
             message=f"Window {window.id} shows high traffic volume: {total_flows} flows. This may indicate increased activity or potential DDoS.",
-            metadata={
+            alert_metadata={
                 "total_flows": total_flows,
                 "window_start": window.start_time.isoformat(),
             },
@@ -115,7 +115,7 @@ def check_and_create_alerts(window: WindowModel, db: Session) -> List[AlertModel
                     severity="medium",
                     title=f"Elevated: {attack_label} Activity",
                     message=f"Window {window.id} detected {count} flows classified as '{attack_label}'. Review recommended.",
-                    metadata={
+                    alert_metadata={
                         "attack_label": attack_label,
                         "count": count,
                         "window_start": window.start_time.isoformat(),
